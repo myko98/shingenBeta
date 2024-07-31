@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			console.log('Update response:', result);
 
 			// Optionally reload the page to reflect changes
-			// location.reload();
+			location.reload();
 		} catch (error) {
 			console.error('There was a problem with the fetch operation:', error);
 		}

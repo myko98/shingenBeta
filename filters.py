@@ -2,7 +2,7 @@ filters = [
     {
         "section": "Region",
         "fields": [
-            {"name": "region", "label": "Region Z",
+            {"name": "region", "label": "Region A",
                 "value": "Region A", "id": "regionA"},
             {"name": "region", "label": "Region B",
                 "value": "Region B", "id": "regionB"},
