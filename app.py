@@ -9,7 +9,7 @@ from bson.objectid import ObjectId
 from dotenv import load_dotenv
 
 from config import Config
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
 import os
 
@@ -80,6 +80,7 @@ class Sake:
 
 
 @app.route('/sake', methods=['POST'])
+@cross_origin()
 def add_sake():
     try:
         data = request.form
@@ -164,6 +165,7 @@ def get_sake_by_id(id):
 
 
 @app.route('/sake/<id>', methods=['PUT'])
+@cross_origin()
 @login_required
 def update_sake(id):
     try:
@@ -199,6 +201,7 @@ def update_sake(id):
 
 
 @app.route('/sake/<id>', methods=['DELETE'])
+@cross_origin()
 @login_required
 def delete_sake(id):
     try:
