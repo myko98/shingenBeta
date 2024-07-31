@@ -86,7 +86,7 @@ def add_sake():
         data = request.form
         file = request.files['image']
 
-        logger.info('Form data: %s', data)
+        # logger.info('Form data: %s', data)
         image_base64 = encode_image(file)
 
         new_sake = {
@@ -122,7 +122,7 @@ def encode_image(file):
 def index():
     try:
         sakes = list(Sake.get_all_sake())
-        logger.info('Filters: %s', filters)
+        # logger.info('Filters: %s', filters)
         return render_template('index.html', sakes=sakes, filters=filters)
     except Exception as e:
         logger.error('Error rendering index: %s', str(e))
@@ -144,7 +144,7 @@ def get_all_sake():
         for sake in sakes:
             sake['_id'] = str(sake['_id'])
             result.append(sake)
-        logger.info('result: %s', result)
+        # logger.info('result: %s', result)
         return jsonify(result)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -170,7 +170,7 @@ def get_sake_by_id(id):
 def update_sake(id):
     try:
         data = request.json
-        logger.info(data)
+        # logger.info(data)
         updates = {
             'name': data.get('name'),
             'properties': {
