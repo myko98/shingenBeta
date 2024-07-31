@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	const close = document.getElementsByClassName("close")[0];
 	const editForm = document.getElementById("editForm");
 	const learnMoreContent = document.getElementById("learnMoreContent");
+	const backendUrl = 'https://shingenbeta.onrender.com';
 
 	// Sidebar accordion
 	var acc = document.getElementsByClassName("accordion");
@@ -43,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			if (confirmDelete) {
 				const gridItem = event.target.closest('.grid-item');
 				const sakeId = gridItem.getAttribute('data-id');
-				fetch(`http://127.0.0.1:5000/sake/${sakeId}`, {
+				fetch(`${backendUrl}/sake/${sakeId}`, {
 					method: 'DELETE'
 				})
 					.then(response => {
@@ -138,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		};
 
 		try {
-			const response = await fetch(`http://127.0.0.1:5000/sake/${sakeId}`, {
+			const response = await fetch(`${backendUrl}/sake/${sakeId}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json'

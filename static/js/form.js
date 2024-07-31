@@ -2,6 +2,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 	console.log("hi")
 
+	const backendUrl = 'https://shingenbeta.onrender.com';
 	const form = document.getElementById("sakeForm")
 
 
@@ -10,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		const formData = new FormData(form)
 		console.log("FormData: ", formData)
 
-		fetch('http://127.0.0.1:5000/sake', {
+		fetch(`${backendUrl}/sake`, {
 			method: 'POST',
 			body: formData,
 		}).then(response => response.json())
