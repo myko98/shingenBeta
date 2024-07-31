@@ -1,0 +1,43 @@
+GET http://127.0.0.1:5000/sake
+
+######
+
+POST http://127.0.0.1:5000/sake HTTP/1.1
+content-type: application/json
+
+{
+    "name": "sample1",
+		"properties": {
+        "id": 1,
+        "name": "Product 1",
+        "mainDescription": "Short description for the main page",
+        "brand": "Brand A",
+        "modalDescription": "Detailed description for the product modal.",
+        "image": "B1.jpeg",
+        "categories": ["Category 1", "Category 2"],
+        "inStock": true,
+        "price": 19.99,
+        "notes": {
+            "Region/Prefecture": "Niigata",
+            "Brewery": "Asahi Shuzo",
+            "Rice Type": "Yamadanishiki",
+            "Polish %": "50%",
+            "Alcohol % (ABV)": "15%",
+            "Fermentation Style": "Ginjo",
+            "Body": "Medium",
+            "Available Sizes": "720ml, 1.8L",
+            "Taste": "Fruity and Crisp",
+            "Pairing": "Sushi, Sashimi",
+            "Style": "Dry"
+        }
+    }
+}
+
+#######
+
+GET http://127.0.0.1:5000/sake/669b2a36ee10f4de11695ca9
+
+
+#######
+
+DELETE http://127.0.0.1:5000/sake/669b2a36ee10f4de11695ca9
