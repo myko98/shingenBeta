@@ -1,12 +1,28 @@
 document.addEventListener("DOMContentLoaded", () => {
 	const modal = document.getElementById("myModal");
 	const learnMoreModal = document.getElementById("learnMoreModal");
-	const close = document.getElementsByClassName("close")[0];
+	const closeButtons = document.querySelectorAll(".close");
 	const editForm = document.getElementById("editForm");
 	const learnMoreContent = document.getElementById("learnMoreContent");
 	const backendUrl = 'https://shingenbeta.onrender.com';
+	const gridItems = Array.from(document.querySelectorAll(".grid-item"));
+	const loadMoreButton = document.getElementById("loadMore");
+	const itemsPerPage = 40;
+	let currentPage = 1;
+	const clearFiltersButton = document.getElementById("clearFilters");
+	const mobileClearFiltersButton = document.getElementById("mobileClearFilters")
+	const burgerIcon = document.querySelector(".burger-icon");
 
-	// Sidebar accordion
+	const searchInput = document.querySelector("#searchInput");
+	const mobileSearchInput = document.querySelector("#mobileSearchInput");
+
+	// Get all sidebar and mobile checkboxes
+	const sidebarFilters = document.querySelectorAll('.sidebar input[type="checkbox"]');
+	const mobileFilters = document.querySelectorAll('.offcanvas-body input[type="checkbox"]');
+
+
+
+	// SIDEBAR ACCORDION
 	var acc = document.getElementsByClassName("accordion");
 	var i;
 
@@ -26,10 +42,44 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	}
 
+	function displayItems() {
+		const start = (currentPage - 1) * itemsPerPage;
+		const end = currentPage * itemsPerPage;
+		gridItems.slice(0, end).forEach(item => item.style.display = "flex");
+		gridItems.slice(end).forEach(item => item.style.display = "none");
 
-	close.onclick = () => modal.style.display = "none";
+		if (end >= gridItems.length) {
+			loadMoreButton.style.display = "none";
+		} else {
+			loadMoreButton.style.display = "block";
+		}
+	}
+
+	loadMoreButton.addEventListener("click", () => {
+		currentPage += 1;
+		displayItems();
+	})
+
+	// Initial display;
+	displayItems();
+
+	// Burger menu to open mobile modal
+	// burgerIcon.addEventListener("click", () => {
+	// 	mobileModal.style.display = "block";
+	// });
+
+	console.log(closeButtons);
+	// close.onclick = () => modal.style.display = "none";
+	closeButtons.forEach(button => {
+		button.onclick = () => {
+			button.closest(".modal").style.display = "none";
+		};
+	});
 
 	window.onclick = function (event) {
+		if (event.target == mobileModal) {
+			mobileModal.style.display = "none";
+		}
 		if (event.target == modal) {
 			modal.style.display = "none";
 		}
@@ -114,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		})
 	})
 
-	// Handle edit form submit
+	// HANDLE EDIT SUBMIT FORM
 	editForm.addEventListener("submit", async (event) => {
 		event.preventDefault();
 		console.log(editForm);
@@ -165,6 +215,10 @@ document.addEventListener("DOMContentLoaded", () => {
 	learnMoreClose.onclick = () => learnMoreModal.style.display = "none";
 
 	// Handle clicking Learn More button for each grid-item
+	/**
+	 * The idea here is that when user presses learn more, we get the info from
+	 * the nearest grid-item, and then we update the modals values with those.
+	 */
 	document.querySelectorAll('.learnMore').forEach(button => {
 		button.addEventListener('click', event => {
 			learnMoreModal.style.display = "block";
@@ -198,8 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		})
 	})
 
-	// Region Filter Functionality
-	// Filter functionality
+	// Add filter functionality to each input checkbox
 	document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
 		checkbox.addEventListener('change', () => {
 			// console.log(checkbox)
@@ -207,7 +260,41 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	});
 
+	// Search input filter
+	searchInput.addEventListener("input", () => {
+		filterSakes();
+	})
+
+	clearFiltersButton.addEventListener("click", () => resetFilters());
+	mobileClearFiltersButton.addEventListener("click", () => resetFilters());
+
+	function syncFilters(source, target) {
+		source.forEach((checkbox, index) => {
+			checkbox.addEventListener('change', function () {
+				console.log("checkbox: ", checkbox);
+				console.log("target: ", target[index]);
+				target[index].checked = this.checked;  // Now 'this' refers to the checkbox
+				filterSakes();
+			});
+		});
+	}
+
+	function syncSearchInputs(input1, input2) {
+		input1.addEventListener('input', function () {
+			input2.value = this.value;
+			filterSakes();
+		});
+	}
+
+	syncFilters(sidebarFilters, mobileFilters);
+	syncFilters(mobileFilters, sidebarFilters);
+	syncSearchInputs(searchInput, mobileSearchInput);
+	syncSearchInputs(mobileSearchInput, searchInput);
+
 	function filterSakes() {
+		console.log('filtering')
+		const searchValue = searchInput.value.toLowerCase();
+
 		const selectedRegions = Array.from(document.querySelectorAll('input[type="checkbox"][name="region"]:checked'))
 			.map(checkbox => checkbox.value);
 
@@ -217,23 +304,33 @@ document.addEventListener("DOMContentLoaded", () => {
 		const selectedAlchohol = Array.from(document.querySelectorAll('input[type="checkbox"][name="alchohol"]:checked'))
 			.map(checkbox => checkbox.value);
 
-		console.log(selectedRegions, selectedBreweries, selectedAlchohol);
-
-		document.querySelectorAll('.grid-item').forEach(item => {
+		gridItems.forEach(item => {
 			const itemRegion = item.getAttribute('data-region');
 			const itemBrewery = item.getAttribute('data-brewery');
 			const itemAlchohol = item.getAttribute('data-alchohol');
+			const sakeName = item.querySelector("h2").textContent.toLowerCase();
 
 			const regionMatch = selectedRegions.length === 0 || selectedRegions.includes(itemRegion);
 			const breweryMatch = selectedBreweries.length === 0 || selectedBreweries.includes(itemBrewery);
-			const alchoholMatch = selectedAlchohol.length === 0 || selectedAlchohol.every(val => Number(itemAlchohol) > val)
+			const alchoholMatch = selectedAlchohol.length === 0 || selectedAlchohol.every(val => Number(itemAlchohol) > val);
+			const searchMatch = sakeName.includes(searchValue);
 
-			if (regionMatch && breweryMatch && alchoholMatch) {
+			if (regionMatch && breweryMatch && alchoholMatch && searchMatch) {
 				item.style.display = 'flex';
 			} else {
 				item.style.display = 'none';
 			}
 		});
+	}
+
+	/**
+	 * Resets all the filters by setting search input to empty string and setting all 
+	 * checkboxes to unchecked
+	 */
+	function resetFilters() {
+		searchInput.value = "";
+		document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => checkbox.checked = false);
+		filterSakes();
 	}
 
 	// LOGOUT
