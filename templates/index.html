@@ -9,7 +9,7 @@
 </head>
 <body>
 
-	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<nav class="navbar navbar-expand-lg navbar-dark">
 		<div class="container-fluid">
 			<a class="navbar-brand d-none d-lg-block mx-auto" href="#">Sake Catalog</a>
 			<button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
@@ -20,7 +20,7 @@
 					<h5 class="offcanvas-title" id="offcanvasNavbarLabel">Filters</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 				</div>
-				<div class="offcanvas-body">
+				<div class="offcanvas-body p-0 offcanvas-style">
 					<input type="text" id="mobileSearchInput" placeholder="Search for sake..."/>
 					{% for filter in filters %}
 							<button class="accordion">{{ filter.section }}</button>
@@ -32,103 +32,190 @@
 									{% endfor %}
 							</div>
 					{% endfor %}
-					<button id="mobileClearFilters">Clear Filters</button>
+					<button class="btn btn-dark" id="mobileClearFilters">Clear Filters</button>
 			</div>
 			</div>
 		</div>
 	</nav>
 	<div class="main-container">
 			<div class="sidebar">
-					<h2>Sidebar</h2>
-					<input type="text" id="searchInput" placeholder="Search for sake..."/>
+					<h2>Filters</h2>
+					<input class="w-100" type="text" id="searchInput" placeholder="Search for sake..."/>
 					{% for filter in filters %}
 							<button class="accordion">{{ filter.section }}</button>
 							<div class="panel">
 									{% for item in filter.fields %}
-											<input type="checkbox" name="{{ item.name }}" id="{{ item.id }}" value="{{ item.value }}">
+											<input class="filterCheckbox" type="checkbox" name="{{ item.name }}" id="{{ item.id }}" value="{{ item.value }}">
 											<label for="{{ item.id }}">{{ item.label }}</label>
 											<br/>
 									{% endfor %}
 							</div>
 					{% endfor %}
-					<button id="clearFilters">Clear Filters</button>
+					<button class="btn btn-dark w-100" id="clearFilters">Clear Filters</button>
 					<br/>
 					{% if current_user.is_authenticated %}
-          <button id="logout">Logout</button>
+          <button class="btn btn-dark w-100" id="logout">Logout</button>
           {% endif %}
 			</div>
 			<div id="flexBody">
 				<div class="grid-container">
 						{% for sake in sakes %}
-						<div class="grid-item" data-id="{{sake._id}}" data-region="{{sake.properties.region}}" data-brewery="{{sake.properties.brewery}}" data-alchohol="{{sake.properties.alchohol}}">
+						<div class="grid-item learnMore" data-id="{{sake._id}}" data-region="{{sake.properties.Region}}" data-brewery="{{sake.properties.Brewery}}" data-alchohol="{{sake.properties.Alchohol}}">
 							<img src="data:image/jpeg;base64,{{ sake.image_base64 }}" alt="{{ sake.name }}">
 							<div class="content">
 								<h2>{{ sake.name }}</h2>
-								<p>Region: {{ sake.properties.region }}</p>
-								<p>Brewery: {{ sake.properties.brewery }}</p>
-								<p>Alchohol %: {{ sake.properties.alchohol }}</p>
-								<p>Sizes: {{ sake.properties.sizes }}</p>
-								<p>Taste: {{ sake.properties.taste }}</p>
-								<p>Pairing: {{ sake.properties.pairing }}</p>
-								<p>Style: {{ sake.properties.style }}</p>
-								<p>Price: {{ sake.properties.price }}</p>
-								<p class="description" style="display: none">Description: {{ sake.description }} </p>
-								{% if current_user.is_authenticated %}
-									<button class="editButton">Edit</button>
-									<button id="deleteButton">Delete</button>
-								{% endif %}
-								<button class="learnMore">Learn More</button>
+								{% for key, value in sake.properties.items() %}
+								<p style="display: none">{{ key }}: {{ value }}</p>
+								{% endfor %}
+								<p>{{ sake.description }} </p>
 							</div>
+							{% if current_user.is_authenticated %}
+									<button class="btn btn-dark border editButton">Edit</button>
+									<button class="btn btn-dark border deleteButton">Delete</button>
+							{% endif %}
+							<div class="price">Price: {{ sake.properties.Price }} </div>
+							<button class="btn btn-dark learnMore">&#9432;</button>
 						</div>
 						{% endfor %}
 				</div>
-				<button id="loadMore">Load More</button>
+				<!-- <button id="loadMore">Load More</button> -->
 			</div>
 			<!-- Edit Modal -->
 			<div id="myModal" class="modal">
 				<div class="modalEditContent">
 					<span class="close">&times;</span>
+					<h2>Sake Form</h2>
 					<form id="editForm">
 						<input type="hidden" name="sakeId">
-						<label for="name">Name</label>
-						<input type="input" name="name" id="name">
-						<br>
-				
-						<label for="region">Region/Prefecture</label>
-						<input type="input" name="region" id="region">
-						<br>
-						<label for="brewery">Brewery</label>
-						<input type="input" name="brewery" id="brewery">
-						<br>
-						<label for="alchohol">Alchohol %</label>
-						<input type="number" name="alchohol %" id="alchohol">
-						<br>
-						<label for="sizes">Available Sizes</label>
-						<input type="input" name="sizes" id="sizes">
-						<br>
-						<label for="taste">Taste</label>
-						<input type="input" name="taste" id="taste">
-						<br>
-						<label for="pairing">Pairing</label>
-						<input type="input" name="pairing" id="pairing">
-						<br>
-						<label for="style">Style</label>
-						<input type="input" name="style" id="style">
-						<br>
-						<label for="price">Price</label>
-						<input type="number" name="price" id="price">
-						<br>
-						<!-- <label for="alchohol">Alchohol %</label>
-						<input type="input" name="alchohol" id="alchohol">
-						<br> -->
-						<label for="image">Photo</label>
-						<input type="file" name="image" id="image">
-						<br>
-						<label for="description">Description</label>
-						<input type="input" name="description" id="description">
-						<br>
-						<label for="submit">Submit</label>
-						<input type="submit" name="submit" id="submit">
+						<div class="mb-3">
+							<label for="name" class="form-label">Name</label>
+							<input type="text" class="form-control" name="name" id="name" />
+						</div>
+		
+						<div class="mb-3">
+							<label for="region" class="form-label">Region/Prefecture</label>
+							<input type="text" class="form-control" name="region" id="region" />
+						</div>
+		
+						<div class="mb-3">
+							<label for="brewery" class="form-label">Brewery</label>
+							<input type="text" class="form-control" name="brewery" id="brewery" />
+						</div>
+		
+						<div class="mb-3">
+							<label for="sizes" class="form-label">Available Sizes</label>
+							<input type="text" class="form-control" name="sizes" id="sizes" />
+						</div>
+		
+						<div class="mb-3">
+							<label for="taste" class="form-label">Taste</label>
+							<input type="text" class="form-control" name="taste" id="taste" />
+						</div>
+		
+						<div class="mb-3">
+							<label for="pairing" class="form-label">Pairing</label>
+							<input type="text" class="form-control" name="pairing" id="pairing" />
+						</div>
+		
+						<div class="mb-3">
+							<label for="style" class="form-label">Style</label>
+							<input type="text" class="form-control" name="style" id="style" />
+						</div>
+		
+						<div class="mb-3">
+							<label for="price" class="form-label">Price</label>
+							<input type="number" class="form-control" name="price" id="price" />
+						</div>
+		
+						<div class="mb-3">
+							<label for="alchohol" class="form-label">Alcohol %</label>
+							<input
+								type="number"
+								class="form-control"
+								name="alchohol"
+								id="alchohol"
+							/>
+						</div>
+		
+						<div class="mb-3">
+							<label for="image" class="form-label">Photo</label>
+							<input type="file" class="form-control" name="image" id="image" />
+						</div>
+		
+						<div class="mb-3">
+							<label for="description" class="form-label">Description</label>
+							<textarea
+								maxlength="230"
+								class="form-control"
+								name="description"
+								id="description"
+								placeholder="Enter text here..."
+							></textarea>
+							<div id="count">0/230</div>
+						</div>
+		
+						<div class="mb-3">
+							<label for="riceType" class="form-label">Rice Type</label>
+							<input
+								type="text"
+								class="form-control"
+								name="rice type"
+								id="riceType"
+							/>
+						</div>
+		
+						<div class="mb-3">
+							<label for="polish" class="form-label">Polish</label>
+							<input type="text" class="form-control" name="polish" id="polish" />
+						</div>
+		
+						<div class="mb-3">
+							<label for="fermentationStyle" class="form-label"
+								>Fermentation Style</label
+							>
+							<input
+								type="text"
+								class="form-control"
+								name="fermentation style"
+								id="fermentationStyle"
+							/>
+						</div>
+		
+						<div class="mb-3">
+							<label for="body" class="form-label">Body</label>
+							<input type="text" class="form-control" name="body" id="body" />
+						</div>
+		
+						<div class="mb-3">
+							<input
+								class="form-check-input"
+								type="hidden"
+								value="True"
+								name="inStock"
+							/>
+							<input
+								class="form-check-input"
+								type="checkbox"
+								value="False"
+								id="inStock"
+								name="in stock"
+							/>
+							<label class="form-label" for="inStock"> Not in stock </label>
+						</div>
+		
+						<div class="mb-3 expectedDateContainer">
+							<label for="expectedDate" class="form-label"
+								>Expected date of return</label
+							>
+							<input
+								id="expectedDate"
+								name="expected date"
+								class="form-control"
+								type="date"
+							/>
+						</div>
+		
+						<button type="submit" class="btn btn-primary">Submit</button>
 					</form>
 				</div>
 			</div>
@@ -137,39 +224,25 @@
 			<div id="learnMoreModal" class="modal">
 				<div class="learnMoreModalContainer">
 					<img id="learnMoreImage" >
-					<div id="learnMoreContent">
+					<div class="learnMoreBaseInfo">
+						<div className="learnMoreHeader" style="display: flex; flex-direction: column; align-items: flex-start;">
 							<h2 id="learnMoreTitle"></h2>
-							<p id="learnMoreRegion"></p>
-							<p id="learnMoreBrewery"></p>
-							<p id="learnMoreSizes"></p>
-							<p id="learnMoreTaste"></p>
-							<p id="learnMorePairing"></p>
-							<p id="learnMoreStyle"></p>
-							<p id="learnMorePrice"></p>
-							<p id="learnMoreDescription"></p>
+							<h2 id="learnMorePrice"></h2>
+							<h2 id="learnMoreSizes"></h2>
+							<h2 id="learnMoreIn_stock"></h2>
+							<h2 id="learnMoreExpected_date"></h2>
+						</div>
+						<h2 style="text-align: left;">Additional Info: </h2>
+						<div id="learnMoreContent">
+							{% for property in sakeProperties %}
+							<p id="learnMore{{ property.replace(' ', '_') }}"></p>
+							{% endfor %}
+						</div>
+						<p id="learnMoreDescription"></p>
 					</div>
 					<span class="close">&times;</span>
 				</div>
     </div>
-		<!-- Mobile Filters Modal -->
-		<div id="mobileModal" class="modal">
-		<div class="modal-content">
-			<span class="close">&times;</span>
-			<div class="filters">
-				{% for filter in filters %}
-					<button class="accordion">{{ filter.section }}</button>
-					<div class="panel">
-						{% for item in filter.fields %}
-							<input type="checkbox" name="{{ item.name }}" id="{{ item.id }}" value="{{ item.value }}">
-							<label for="{{ item.id }}">{{ item.label }}</label>
-							<br/>
-						{% endfor %}
-					</div>
-				{% endfor %}
-				<button id="mobileClearFilters">Clear Filters</button>
-			</div>
-		</div>
-	</div>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 	<script src="../static/js/script.js"></script>
 </body>

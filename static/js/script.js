@@ -5,10 +5,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	const editForm = document.getElementById("editForm");
 	const learnMoreContent = document.getElementById("learnMoreContent");
 	const backendUrl = 'https://shingenbeta.onrender.com';
+	// const backendUrl = 'http://127.0.0.1:5000'
 	const gridItems = Array.from(document.querySelectorAll(".grid-item"));
 	const loadMoreButton = document.getElementById("loadMore");
-	const itemsPerPage = 40;
-	let currentPage = 1;
+	// const itemsPerPage = 40;
+	// let currentPage = 1;
 	const clearFiltersButton = document.getElementById("clearFilters");
 	const mobileClearFiltersButton = document.getElementById("mobileClearFilters")
 	const burgerIcon = document.querySelector(".burger-icon");
@@ -42,34 +43,29 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	}
 
-	function displayItems() {
-		const start = (currentPage - 1) * itemsPerPage;
-		const end = currentPage * itemsPerPage;
-		gridItems.slice(0, end).forEach(item => item.style.display = "flex");
-		gridItems.slice(end).forEach(item => item.style.display = "none");
+	// 08 11 Might need to reimplement if I do lazy loading/caching
+	// But for now we compress images stored in mongoDB is sufficient
+	// function displayItems() {
+	// 	const start = (currentPage - 1) * itemsPerPage;
+	// 	const end = currentPage * itemsPerPage;
+	// 	gridItems.slice(0, end).forEach(item => item.style.display = "flex");
+	// 	gridItems.slice(end).forEach(item => item.style.display = "none");
 
-		if (end >= gridItems.length) {
-			loadMoreButton.style.display = "none";
-		} else {
-			loadMoreButton.style.display = "block";
-		}
-	}
+	// 	if (end >= gridItems.length) {
+	// 		loadMoreButton.style.display = "none";
+	// 	} else {
+	// 		loadMoreButton.style.display = "block";
+	// 	}
+	// }
 
-	loadMoreButton.addEventListener("click", () => {
-		currentPage += 1;
-		displayItems();
-	})
+	// loadMoreButton.addEventListener("click", () => {
+	// 	currentPage += 1;
+	// 	displayItems();
+	// })
 
-	// Initial display;
-	displayItems();
+	// // Initial display;
+	// displayItems();
 
-	// Burger menu to open mobile modal
-	// burgerIcon.addEventListener("click", () => {
-	// 	mobileModal.style.display = "block";
-	// });
-
-	console.log(closeButtons);
-	// close.onclick = () => modal.style.display = "none";
 	closeButtons.forEach(button => {
 		button.onclick = () => {
 			button.closest(".modal").style.display = "none";
@@ -77,19 +73,18 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 
 	window.onclick = function (event) {
-		if (event.target == mobileModal) {
-			mobileModal.style.display = "none";
-		}
 		if (event.target == modal) {
 			modal.style.display = "none";
 		}
 		if (event.target == learnMoreModal) {
 			learnMoreModal.style.display = "none";
 		}
+		document.body.style.overflow = "";
 	}
 
-	document.querySelectorAll('#deleteButton').forEach(button => {
+	document.querySelectorAll('.deleteButton').forEach(button => {
 		button.addEventListener('click', event => {
+			event.stopPropagation();
 			const confirmDelete = confirm("Are you sure you want to delete?")
 			if (confirmDelete) {
 				const gridItem = event.target.closest('.grid-item');
@@ -122,9 +117,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	// Edit form handling, loads data from card into edit form
 	document.querySelectorAll('.editButton').forEach(button => {
-		button.addEventListener('click', event => {
+		button.addEventListener('click', function (event) {
+			event.stopPropagation();
 			modal.style.display = "block";
-			const contentContainer = event.target.closest('.content');
+			const contentContainer = this.parentNode.querySelector('.content');
 			if (!contentContainer) return;
 
 			const title = contentContainer.querySelector('h2');
@@ -132,32 +128,50 @@ document.addEventListener("DOMContentLoaded", () => {
 
 			if (title) editForm.name.value = title.textContent;
 
-			// Get all values after colon and set values to editForm
-			// properties.forEach(p => {
-			// 	const text = p.textContent;
-			// 	const [key, value] = text.split(': ');
-			// 	if (key.toLowerCase() in editForm) {
-			// 		editForm[key.toLowerCase()].value = value;
-			// 	}
-			// });
-
-			properties.forEach(p => {
-				const text = p.textContent;
-				const [key, value] = text.split(': ');
-				const inputElement = editForm.querySelector(`[name="${key.toLowerCase()}"]`);
-				if (inputElement) {
-					console.log(inputElement);
-					if (inputElement.type === 'number') {
-						console.log(`Setting ${key} to ${parseFloat(value)}`);
-						inputElement.value = parseFloat(value) || 0; // Use parseFloat to convert to number
-					} else {
-						inputElement.value = value;
+			properties.forEach((p, index) => {
+				// Skip the last one since that's for description and it has no :
+				if (index < properties.length - 1) {
+					const text = p.textContent;
+					const [key, value] = text.split(': ');
+					const inputElement = editForm.querySelector(`[name="${key.toLowerCase()}"]`);
+					if (inputElement) {
+						if (inputElement.type === 'number') {
+							inputElement.value = parseFloat(value) || 0; // Use parseFloat to convert to number
+						}
+						// Dealing with in stock checkbox
+						else if (key.toLowerCase() === "in stock") {
+							if (value === "False") {
+								inputElement.checked = true;
+							} else {
+								inputElement.checked = false;
+							}
+						}
+						else {
+							inputElement.value = value;
+						}
 					}
 				}
 			});
 
+			// Set description seperately since it doesn't have :
+			editForm.querySelector('[name="description"]').value = properties[properties.length - 1].textContent
 
-			// Set the sakeId
+			// Set description character count
+			const descriptionCharLength = document.querySelector("#description").value.length;
+			document.querySelector("#count").textContent = descriptionCharLength + " / 230";
+			// update Description char count
+			document.querySelector("#description").addEventListener('input', function () {
+				let charCount = this.value.length;
+				const count = this.nextElementSibling;
+
+				count.innerHTML = charCount + " / 230"
+				if (charCount > 230) {
+					this.value = this.value.substring(0, 230)
+					count.innerHTML = "230 / 230"
+				}
+			})
+
+			// Set the sakeId to be passed to PUT request
 			const gridItem = event.target.closest('.grid-item');
 			const sakeId = gridItem.getAttribute('data-id');
 			editForm.sakeId.value = sakeId;
@@ -171,22 +185,31 @@ document.addEventListener("DOMContentLoaded", () => {
 		const formData = new FormData(editForm);
 		const sakeId = formData.get('sakeId');
 
+		// console.log("getting in stock: ", formData.get('in stock'));
 
 		// .get takes the `name` of the field input
 		const data = {
-			name: formData.get('name'),
-			properties: {
-				region: formData.get('region'),
-				brewery: formData.get('brewery'),
-				alchohol: formData.get('alchohol %'),
-				sizes: formData.get('sizes'),
-				taste: formData.get('taste'),
-				pairing: formData.get('pairing'),
-				style: formData.get('style'),
-				price: formData.get('price')
+			"name": formData.get('name'),
+			"properties": {
+				"Region": formData.get('region'),
+				"Brewery": formData.get('brewery'),
+				"Sizes": formData.get('sizes'),
+				"Taste": formData.get('taste'),
+				"Pairing": formData.get('pairing'),
+				"Style": formData.get('style'),
+				"Price": formData.get('price'),
+				"Alchohol": formData.get('alchohol'),
+				"Rice type": formData.get('rice type'),
+				"Polish": formData.get('polish'),
+				"Fermentation style": formData.get('fermentation style'),
+				"Body": formData.get('body'),
+				"In stock": formData.get('in stock') || "True",
+				"Expected date": formData.get('expected date')
 			},
-			description: formData.get('description')
+			"description": formData.get('description')
 		};
+
+		console.log(JSON.stringify(data));
 
 		try {
 			const response = await fetch(`${backendUrl}/sake/${sakeId}`, {
@@ -214,46 +237,65 @@ document.addEventListener("DOMContentLoaded", () => {
 	const learnMoreClose = document.getElementsByClassName("close")[1];
 	learnMoreClose.onclick = () => learnMoreModal.style.display = "none";
 
-	// Handle clicking Learn More button for each grid-item
 	/**
+	 * Handle clicking Learn More button for each grid-item
+	 * 
 	 * The idea here is that when user presses learn more, we get the info from
 	 * the nearest grid-item, and then we update the modals values with those.
 	 */
 	document.querySelectorAll('.learnMore').forEach(button => {
 		button.addEventListener('click', event => {
+			event.stopPropagation();
 			learnMoreModal.style.display = "block";
 
-			const contentContainer = event.target.closest('.grid-item');
-			const description = contentContainer.querySelector('.description').textContent.split(': ')[1];
+			document.body.style.overflow = 'hidden'; // Disable all scrolling
 
-			console.log(description);
+			const contentContainer = event.target.closest('.grid-item');
 
 			if (!contentContainer) return;
 
 			const title = contentContainer.querySelector('h2').textContent;
 			const properties = contentContainer.querySelectorAll('p');
 			const image = contentContainer.querySelector('img').src;
-			console.log("properties: ", properties)
-			console.log(event.target.closest('img'))
 
 			if (title) document.getElementById("learnMoreTitle").textContent = title;
 			document.getElementById("learnMoreImage").src = image;
 
 			properties.forEach(p => {
 				const [key, value] = p.textContent.split(': ');
-				const elementId = `learnMore${key.charAt(0).toUpperCase() + key.slice(1).toLowerCase()}`;
+				const elementId = `learnMore${key.replace(' ', '_')}`;
+				// console.log(elementId, value);
+
 				const element = document.getElementById(elementId);
 				if (element) {
-					element.textContent = `${key}: ${value.trim()}`;
+					if (elementId === "learnMoreIn_stock") {
+						if (value.trim() === "True") {
+							element.innerHTML = `${key}: &check;`
+						} else {
+							element.innerHTML = `${key}: &#10060;`
+						}
+					}
+					else if (elementId === "learnMoreExpected_date") {
+						if (value.trim() === "") {
+							element.style.display = "none"
+						} else {
+							element.style.display = "block";
+							element.textContent = `${key}: ${value.trim()}`;
+						}
+					}
+					else {
+						element.textContent = `${key}: ${value.trim()}`;
+					}
 				}
 			});
 
-			document.getElementById('learnMoreDescription').textContent = `Description: ${description}`;
+			// set description seperately since it doesn't have :
+			document.getElementById("learnMoreDescription").innerText = properties[properties.length - 1].textContent;
 		})
 	})
 
 	// Add filter functionality to each input checkbox
-	document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+	document.querySelectorAll('.filterCheckbox').forEach(checkbox => {
 		checkbox.addEventListener('change', () => {
 			// console.log(checkbox)
 			filterSakes();
@@ -271,8 +313,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	function syncFilters(source, target) {
 		source.forEach((checkbox, index) => {
 			checkbox.addEventListener('change', function () {
-				console.log("checkbox: ", checkbox);
-				console.log("target: ", target[index]);
+				// console.log("checkbox: ", checkbox);
+				// console.log("target: ", target[index]);
 				target[index].checked = this.checked;  // Now 'this' refers to the checkbox
 				filterSakes();
 			});
@@ -292,29 +334,33 @@ document.addEventListener("DOMContentLoaded", () => {
 	syncSearchInputs(mobileSearchInput, searchInput);
 
 	function filterSakes() {
-		console.log('filtering')
-		const searchValue = searchInput.value.toLowerCase();
+		console.log("FILTERING SAKES")
 
+		// Get the search bar value, as well as any checkedbox values selected
+		const searchValue = searchInput.value.toLowerCase();
 		const selectedRegions = Array.from(document.querySelectorAll('input[type="checkbox"][name="region"]:checked'))
 			.map(checkbox => checkbox.value);
-
 		const selectedBreweries = Array.from(document.querySelectorAll('input[type="checkbox"][name="brewery"]:checked'))
 			.map(checkbox => checkbox.value);
-
 		const selectedAlchohol = Array.from(document.querySelectorAll('input[type="checkbox"][name="alchohol"]:checked'))
 			.map(checkbox => checkbox.value);
 
+		console.log("GRID ITEMS: ", gridItems);
 		gridItems.forEach(item => {
 			const itemRegion = item.getAttribute('data-region');
 			const itemBrewery = item.getAttribute('data-brewery');
 			const itemAlchohol = item.getAttribute('data-alchohol');
 			const sakeName = item.querySelector("h2").textContent.toLowerCase();
 
+			console.log(itemRegion, itemBrewery, itemAlchohol, sakeName);
+
+			// if no regions were selected or the filter is selected
 			const regionMatch = selectedRegions.length === 0 || selectedRegions.includes(itemRegion);
 			const breweryMatch = selectedBreweries.length === 0 || selectedBreweries.includes(itemBrewery);
 			const alchoholMatch = selectedAlchohol.length === 0 || selectedAlchohol.every(val => Number(itemAlchohol) > val);
 			const searchMatch = sakeName.includes(searchValue);
 
+			console.log(regionMatch, breweryMatch, alchoholMatch, searchMatch)
 			if (regionMatch && breweryMatch && alchoholMatch && searchMatch) {
 				item.style.display = 'flex';
 			} else {
@@ -328,8 +374,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	 * checkboxes to unchecked
 	 */
 	function resetFilters() {
+		mobileSearchInput.value = "";
 		searchInput.value = "";
-		document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => checkbox.checked = false);
+		document.querySelectorAll('.filterCheckbox:checked').forEach(checkbox => checkbox.checked = false);
 		filterSakes();
 	}
 

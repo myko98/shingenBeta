@@ -24,7 +24,6 @@ app.config['ENV'] = 'development'
 app.config['DEBUG'] = True
 # need to set key in order to login
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-# app.config['MONGO_URI'] = 'mongodb://localhost:27017/your_db_name'
 app.config.from_object(Config)
 
 mongo = PyMongo(app)
@@ -89,17 +88,24 @@ def add_sake():
         # logger.info('Form data: %s', data)
         image_base64 = encode_image(file)
 
+				# get the form values by referencing their "name" property
         new_sake = {
             'name': data.get('name'),
             'properties': {
-                'region': data.get('region'),
-                'brewery': data.get('brewery'),
-                'sizes': data.get('sizes'),
-                'taste': data.get('taste'),
-                'pairing': data.get('pairing'),
-                'style': data.get('style'),
-                'price': data.get('price'),
-                'alchohol': data.get('alchohol')
+                'Region': data.get('region'),
+                'Brewery': data.get('brewery'),
+                'Sizes': data.get('sizes'),
+                'Taste': data.get('taste'),
+                'Pairing': data.get('pairing'),
+                'Style': data.get('style'),
+                'Price': data.get('price'),
+                'Alchohol': data.get('alchohol'),
+                'Rice type': data.get('riceType'),
+                'Polish': data.get('polish'),
+                'Fermentation style': data.get('fermentationStyle'),
+                'Body': data.get('body'),
+                'In stock': data.get('inStock'),
+                'Expected date': data.get('expectedDate'),
             },
             'image_base64': image_base64,
             'description': data.get('description')
@@ -123,7 +129,11 @@ def index():
     try:
         sakes = list(Sake.get_all_sake())
         # logger.info('Filters: %s', filters)
-        return render_template('index.html', sakes=sakes, filters=filters)
+        # 08 11 not sure what filters do?
+        # Removed Price, sizes, In stock, and Expected date because thats a main property
+        sakeProperties = ['Region', 'Brewery','Taste', 'Pairing', 'Style', 'Alchohol', 'Rice type', 'Polish', 'Fermentation style', 'Body']
+        
+        return render_template('index.html', sakes=sakes, filters=filters, sakeProperties=sakeProperties)
     except Exception as e:
         logger.error('Error rendering index: %s', str(e))
         return str(e), 500
@@ -164,6 +174,7 @@ def get_sake_by_id(id):
         return jsonify({'error': str(e)}), 500
 
 
+# UPDATE SPECIFIC SAKE
 @app.route('/sake/<id>', methods=['PUT'])
 @cross_origin()
 @login_required
@@ -174,18 +185,24 @@ def update_sake(id):
         updates = {
             'name': data.get('name'),
             'properties': {
-                'region': data['properties'].get('region'),
-                'brewery': data['properties'].get('brewery'),
-                'alchohol': data['properties'].get('alchohol'),
-                'sizes': data['properties'].get('sizes'),
-                'taste': data['properties'].get('taste'),
-                'pairing': data['properties'].get('pairing'),
-                'style': data['properties'].get('style'),
-                'price': data['properties'].get('price'),
+								'Region': data['properties'].get('Region'),
+                'Brewery': data['properties'].get('Brewery'),
+                'Sizes': data['properties'].get('Sizes'),
+                'Taste': data['properties'].get('Taste'),
+                'Pairing': data['properties'].get('Pairing'),
+                'Style': data['properties'].get('Style'),
+                'Price': data['properties'].get('Price'),
+                'Alchohol': data['properties'].get('Alchohol'),
+                'Rice type': data['properties'].get('Rice type'),
+                'Polish': data['properties'].get('Polish'),
+                'Fermentation style': data['properties'].get('Fermentation style'),
+                'Body': data['properties'].get('Body'),
+                'In stock': data['properties'].get('In stock'),
+                'Expected date': data['properties'].get('Expected date'),
             },
             'description': data.get('description')
         }
-
+        
         if 'image' in request.files:
             file = request.files['image']
             image_base64 = encode_image(file)
