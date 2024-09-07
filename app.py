@@ -12,6 +12,7 @@ from config import Config
 from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
 import os
+import json
 
 # import sidebar filters from filters file
 from filters import filters
@@ -180,12 +181,12 @@ def get_sake_by_id(id):
 @login_required
 def update_sake(id):
     try:
-        data = request.json
-        # logger.info(data)
+        # Parse JSON data from the 'data' field in form
+        data = json.loads(request.form.get('data', '{}'))
         updates = {
             'name': data.get('name'),
             'properties': {
-								'Region': data['properties'].get('Region'),
+                'Region': data['properties'].get('Region'),
                 'Brewery': data['properties'].get('Brewery'),
                 'Sizes': data['properties'].get('Sizes'),
                 'Taste': data['properties'].get('Taste'),
@@ -203,10 +204,12 @@ def update_sake(id):
             'description': data.get('description')
         }
         
+        # Handle image file upload
         if 'image' in request.files:
             file = request.files['image']
-            image_base64 = encode_image(file)
-            updates['image_base64'] = image_base64
+            if file:
+                image_base64 = encode_image(file)  # Make sure this function is defined in your code
+                updates['image_base64'] = image_base64
 
         result = Sake.update_sake(ObjectId(id), updates)
 
@@ -214,6 +217,8 @@ def update_sake(id):
             return jsonify({'error': 'Sake not found'}), 404
         return jsonify(updates)
     except Exception as e:
+        # Log the full traceback to help diagnose the issue
+        print(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
 
 

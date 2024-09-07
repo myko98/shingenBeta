@@ -4,8 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	const closeButtons = document.querySelectorAll(".close");
 	const editForm = document.getElementById("editForm");
 	const learnMoreContent = document.getElementById("learnMoreContent");
-	const backendUrl = 'https://shingenbeta.onrender.com';
-	// const backendUrl = 'http://127.0.0.1:5000'
+	// const backendUrl = 'https://shingenbeta.onrender.com';
+	const backendUrl = 'http://127.0.0.1:5000'
 	const gridItems = Array.from(document.querySelectorAll(".grid-item"));
 	const loadMoreButton = document.getElementById("loadMore");
 	// const itemsPerPage = 40;
@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.body.style.overflow = "";
 	}
 
+	// Delete a sake from DB
 	document.querySelectorAll('.deleteButton').forEach(button => {
 		button.addEventListener('click', event => {
 			event.stopPropagation();
@@ -181,13 +182,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	// HANDLE EDIT SUBMIT FORM
 	editForm.addEventListener("submit", async (event) => {
 		event.preventDefault();
-		console.log(editForm);
 		const formData = new FormData(editForm);
-		const sakeId = formData.get('sakeId');
 
-		// console.log("getting in stock: ", formData.get('in stock'));
-
-		// .get takes the `name` of the field input
+		// Create the data object with nested properties
 		const data = {
 			"name": formData.get('name'),
 			"properties": {
@@ -209,15 +206,13 @@ document.addEventListener("DOMContentLoaded", () => {
 			"description": formData.get('description')
 		};
 
-		console.log(JSON.stringify(data));
+		// Append JSON stringified data to FormData
+		formData.set('data', JSON.stringify(data)); // Send as a string field
 
 		try {
-			const response = await fetch(`${backendUrl}/sake/${sakeId}`, {
+			const response = await fetch(`${backendUrl}/sake/${formData.get('sakeId')}`, {
 				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(data)
+				body: formData // pass form data directly
 			});
 
 			if (!response.ok) {
@@ -310,6 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	clearFiltersButton.addEventListener("click", () => resetFilters());
 	mobileClearFiltersButton.addEventListener("click", () => resetFilters());
 
+	// Syncs the mobile and desktop checkboxes
 	function syncFilters(source, target) {
 		source.forEach((checkbox, index) => {
 			checkbox.addEventListener('change', function () {
@@ -321,6 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	}
 
+	// Syncs the mobile and desktop inputs
 	function syncSearchInputs(input1, input2) {
 		input1.addEventListener('input', function () {
 			input2.value = this.value;
@@ -333,35 +330,48 @@ document.addEventListener("DOMContentLoaded", () => {
 	syncSearchInputs(searchInput, mobileSearchInput);
 	syncSearchInputs(mobileSearchInput, searchInput);
 
-	function filterSakes() {
-		console.log("FILTERING SAKES")
+	/**
+	 * Filter categories
+	 * 
+	 * Whenever new filter categories get added, add them into here
+	 */
+	const categories = ["region", "brewery", "alchohol", "taste", "style", "riceType", "fermentationStyle", "polish", "body"]
 
+	function filterSakes() {
 		// Get the search bar value, as well as any checkedbox values selected
 		const searchValue = searchInput.value.toLowerCase();
-		const selectedRegions = Array.from(document.querySelectorAll('input[type="checkbox"][name="region"]:checked'))
-			.map(checkbox => checkbox.value);
-		const selectedBreweries = Array.from(document.querySelectorAll('input[type="checkbox"][name="brewery"]:checked'))
-			.map(checkbox => checkbox.value);
-		const selectedAlchohol = Array.from(document.querySelectorAll('input[type="checkbox"][name="alchohol"]:checked'))
-			.map(checkbox => checkbox.value);
 
-		console.log("GRID ITEMS: ", gridItems);
+		const selectedValues = categories.reduce((acc, category) => {
+			acc[category] = Array.from(document.querySelectorAll(`input[type="checkbox"][name="${category}"]:checked`)).map(checkbox => checkbox.value)
+
+			return acc
+		}, {});
+
+		console.log("selected values: ", selectedValues)
+
 		gridItems.forEach(item => {
-			const itemRegion = item.getAttribute('data-region');
-			const itemBrewery = item.getAttribute('data-brewery');
-			const itemAlchohol = item.getAttribute('data-alchohol');
+			let matchesAllCategories = true;
+
+			categories.forEach(category => {
+				const itemValue = item.getAttribute(`data-${category}`)
+				const selectedCategoryValues = selectedValues[category]
+
+				// Check if there are no selected values or if the item's attribute value matches any of the selected values
+				if (selectedCategoryValues.length > 0) {
+					if (category === "alchohol") {
+						// Special handling for 'alchohol' to compare numerical values
+						matchesAllCategories = matchesAllCategories && selectedCategoryValues.every(val => Number(itemValue) > val);
+					} else {
+						matchesAllCategories = matchesAllCategories && selectedCategoryValues.includes(itemValue);
+					}
+				}
+			})
+
+			// Check if the sake name matches the search input
 			const sakeName = item.querySelector("h2").textContent.toLowerCase();
-
-			console.log(itemRegion, itemBrewery, itemAlchohol, sakeName);
-
-			// if no regions were selected or the filter is selected
-			const regionMatch = selectedRegions.length === 0 || selectedRegions.includes(itemRegion);
-			const breweryMatch = selectedBreweries.length === 0 || selectedBreweries.includes(itemBrewery);
-			const alchoholMatch = selectedAlchohol.length === 0 || selectedAlchohol.every(val => Number(itemAlchohol) > val);
 			const searchMatch = sakeName.includes(searchValue);
 
-			console.log(regionMatch, breweryMatch, alchoholMatch, searchMatch)
-			if (regionMatch && breweryMatch && alchoholMatch && searchMatch) {
+			if (matchesAllCategories && searchMatch) {
 				item.style.display = 'flex';
 			} else {
 				item.style.display = 'none';
@@ -381,13 +391,16 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	// LOGOUT
-	document.getElementById('logout').addEventListener('click', () => {
-		fetch('/logout', { method: "GET" }).then(response => {
-			if (response.ok) {
-				window.location.href = '/login'
-			} else {
-				console.log("logout failed")
-			}
-		}).catch(error => console.error("Error: ", error));
-	})
+	const logout = document.getElementById('logout');
+	if (logout) {
+		document.getElementById('logout').addEventListener('click', () => {
+			fetch('/logout', { method: "GET" }).then(response => {
+				if (response.ok) {
+					window.location.href = '/login'
+				} else {
+					console.log("logout failed")
+				}
+			}).catch(error => console.error("Error: ", error));
+		})
+	}
 })

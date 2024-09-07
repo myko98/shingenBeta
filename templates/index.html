@@ -45,9 +45,10 @@
 							<button class="accordion">{{ filter.section }}</button>
 							<div class="panel">
 									{% for item in filter.fields %}
-											<input class="filterCheckbox" type="checkbox" name="{{ item.name }}" id="{{ item.id }}" value="{{ item.value }}">
-											<label for="{{ item.id }}">{{ item.label }}</label>
-											<br/>
+											<div class="form-check">
+												<input class="form-check-input filterCheckbox" type="checkbox" name="{{ item.name }}" id="{{ item.id }}" value="{{ item.value }}">
+												<label class="form-check-label" for="{{ item.id }}">{{ item.label }}</label>
+											</div>
 									{% endfor %}
 							</div>
 					{% endfor %}
