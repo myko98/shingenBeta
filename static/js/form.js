@@ -2,10 +2,10 @@
 document.addEventListener("DOMContentLoaded", () => {
 	console.log("hi")
 
-	// const backendUrl = 'https://shingenbeta.onrender.com';
+	const backendUrl = 'https://shingenbeta.onrender.com';
 
 	// TESTING USE 127
-	const backendUrl = 'http://127.0.0.1:5000';
+	// const backendUrl = 'http://127.0.0.1:5000';
 	const form = document.getElementById("sakeForm")
 
 

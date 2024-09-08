@@ -109,7 +109,8 @@ def add_sake():
                 'Expected date': data.get('expectedDate'),
             },
             'image_base64': image_base64,
-            'description': data.get('description')
+            'description': data.get('description'),
+            'new': data.get('new')
         }
         result = Sake.add_sake(new_sake)
         return jsonify({
@@ -129,12 +130,17 @@ def encode_image(file):
 def index():
     try:
         sakes = list(Sake.get_all_sake())
-        # logger.info('Filters: %s', filters)
-        # 08 11 not sure what filters do?
-        # Removed Price, sizes, In stock, and Expected date because thats a main property
         sakeProperties = ['Region', 'Brewery','Taste', 'Pairing', 'Style', 'Alchohol', 'Rice type', 'Polish', 'Fermentation style', 'Body']
-        
-        return render_template('index.html', sakes=sakes, filters=filters, sakeProperties=sakeProperties)
+        is_authenticated = current_user.is_authenticated
+        print(is_authenticated)
+        return render_template(
+            'index.html', 
+            sakes=sakes,
+            filters=filters,
+            sakeProperties=sakeProperties,
+            # Pass authentication status to the template
+           	is_authenticated=is_authenticated)
+    
     except Exception as e:
         logger.error('Error rendering index: %s', str(e))
         return str(e), 500
@@ -145,9 +151,8 @@ def index():
 def form():
     return render_template('form.html')
 
-
+# RETURN ALL SAKES AS JSON
 @app.route('/sake', methods=['GET'])
-@login_required
 def get_all_sake():
     try:
         sakes = Sake.get_all_sake()
@@ -201,7 +206,8 @@ def update_sake(id):
                 'In stock': data['properties'].get('In stock'),
                 'Expected date': data['properties'].get('Expected date'),
             },
-            'description': data.get('description')
+            'description': data.get('description'),
+            'new': data.get('new')
         }
         
         # Handle image file upload

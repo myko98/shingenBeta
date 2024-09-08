@@ -43,20 +43,19 @@ nav.custom-navbar {
   border: 1px solid #ccc;
   text-align: left;
   min-width: 250px;
+  min-height: 882px;
 }
 
 .grid-item img {
-  width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: cover;
 }
 
 .grid-item .content {
   flex-grow: 1;
-  max-height: 230px;
+  min-height: 230px;
   text-align: center;
   padding: 10px;
-  overflow: hidden;
   text-overflow: ellipsis;
   margin-bottom: 50px;
 }
@@ -80,7 +79,18 @@ nav.custom-navbar {
 .grid-item .deleteButton {
   position: absolute;
   top: 0;
+  left: 70px;
+}
+
+.grid-item .newIcon {
+  position: absolute;
+  top: 0;
   right: 0;
+  border-radius: 10px;
+  background-color: rgb(255, 174, 0);
+  width: 50px;
+  text-align: center;
+  margin: 5px;
 }
 
 /* The Modal (background) */
