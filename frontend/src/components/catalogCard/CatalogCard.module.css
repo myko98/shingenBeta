@@ -1,0 +1,21 @@
+.cardContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 200px;
+  border: red 2px solid;
+}
+
+.imageSize {
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+}
+
+.title {
+  text-align: center;
+}
+
+.cardBody {
+  height: 200px;
+}

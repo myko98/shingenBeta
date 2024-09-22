@@ -1,0 +1,10 @@
+.catalogGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px; /* Space between grid items */
+
+  /* Mobile: 1 column per row */
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
