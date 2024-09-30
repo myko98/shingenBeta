@@ -6,7 +6,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Sidebar = ({ setFilters }) => {
 	const handleClick = (e) => {
-
 		setFilters((old) => {
 			const { value, checked } = e.target
 

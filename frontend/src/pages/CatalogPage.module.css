@@ -1,5 +1,8 @@
 .body {
   display: flex;
   justify-content: center;
-  width: 90vw;
+  margin: 0 auto;
+  width: 1500px;
+  gap: 1rem;
+  /* width: 50vw; */
 }
