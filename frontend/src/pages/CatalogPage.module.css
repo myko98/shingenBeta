@@ -1,8 +1,8 @@
 .body {
-  display: flex;
-  justify-content: center;
-  margin: 0 auto;
-  width: 1500px;
-  gap: 1rem;
-  /* width: 50vw; */
+	display: flex;
+	justify-content: center;
+	margin: 0 auto;
+	width: 1500px;
+	gap: 1rem;
+	/* width: 50vw; */
 }
