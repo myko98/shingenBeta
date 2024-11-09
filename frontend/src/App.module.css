@@ -1,0 +1,20 @@
+@font-face {
+  font-family: tw;
+  src: url(../src/assets/font/tw-cen-mt-bold.ttf);
+}
+
+body {
+  font-family: "tw", Arial, Helvetica, sans-serif;
+  color: white !important;
+  background-color: black;
+}
+
+.appContainer {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+p {
+  font-size: 1.2rem;
+}

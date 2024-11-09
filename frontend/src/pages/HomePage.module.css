@@ -1,0 +1,21 @@
+.container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.container img {
+  width: 100%;
+}
+
+.section img {
+  max-width: 60px;
+}
+
+.footerGrid {
+  display: grid;
+  grid-row: inherit;
+  grid-template-columns: 1fr 1fr 1fr;
+}

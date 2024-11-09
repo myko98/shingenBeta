@@ -1,28 +1,37 @@
-import React, { useState } from 'react';
-import styles from './Navbar.module.css'; // Import your CSS for styling
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import ShingenLogo from '../../assets/mainPage/Shingen-White-Logo.png'
+import styles from './Navbar.module.css'
+import { Link } from 'react-router-dom'
 
-const Navbar = () => {
-	const [isOpen, setIsOpen] = useState(false);
-
-	const toggleMenu = () => {
-		setIsOpen(!isOpen);
-	};
-
+function BasicExample() {
 	return (
-		<nav className={styles.navbar}>
-			<div className="logo">MyLogo</div>
-			<ul className={`${styles.navLinks} ${isOpen ? 'open' : ''}`}>
-				<li><a href="#home">Home</a></li>
-				<li><a href="#about">About</a></li>
-				<li><a href="#contact">Contact</a></li>
-			</ul>
-			<div className="burger" onClick={toggleMenu}>
-				<div className="line1"></div>
-				<div className="line2"></div>
-				<div className="line3"></div>
-			</div>
-		</nav>
+		<Navbar expand="lg" sticky="top" data-bs-theme="dark" className={styles.background}>
+			<Container>
+				<Navbar.Brand href="#home">
+					<img
+						src={ShingenLogo}
+						className={styles.navBarImg}
+						alt="Shingen Logo"
+					/>
+				</Navbar.Brand>
+				<Navbar.Toggle aria-controls="basic-navbar-nav" />
+				<Navbar.Collapse id="basic-navbar-nav">
+					<Nav className="ms-auto">
+						<Nav.Link href="/#home">HOME</Nav.Link>
+						<Nav.Link href="/#menu">MENU</Nav.Link>
+						<Nav.Link href="/#reservations">RESERVATIONS</Nav.Link>
+						<Nav.Link href="/#location">LOCATION</Nav.Link>
+						<Nav.Link>
+							<Link to="/catalog" style={{ textDecoration: 'none', color: 'inherit' }}>CATALOG</Link>
+						</Nav.Link>
+					</Nav>
+				</Navbar.Collapse>
+			</Container>
+		</Navbar>
 	);
-};
+}
 
-export default Navbar;
+export default BasicExample;

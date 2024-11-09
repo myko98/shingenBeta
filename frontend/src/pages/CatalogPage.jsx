@@ -3,6 +3,8 @@ import Navbar from '../components/navbar/Navbar';
 import Sidebar from '../components/sidebar/Sidenav';
 import Catalog from '../components/catalog/Catalog';
 import styles from './CatalogPage.module.css'
+import CatalogModal from '../components/catalogModal/CatalogModal'
+import EditCreateModal from '../components/editCreateModal/EditCreateModal'
 
 const fetchData = async (setCards) => {
 	try {
@@ -28,6 +30,12 @@ const CatalogPage = () => {
 	const [filters, setFilters] = useState([])
 	const [cards, setCards] = useState([])
 	const [filteredCards, setFilteredCards] = useState([])
+	const [selectedCard, setSelectedCard] = useState(null)
+	const [openModal, setOpenModal] = useState("");
+
+	const handleSelectedCard = (selectedCard) => {
+		setSelectedCard(selectedCard)
+	}
 
 	// Fetch cards on load
 	useEffect(() => { fetchData(setCards) }, [])
@@ -47,17 +55,23 @@ const CatalogPage = () => {
 		}
 	}, [filters, cards])
 
-	console.log("CARDS in CATALOGPAGE:", cards)
+	// console.log("CARDS in CATALOGPAGE:", cards)
 
 
 	return (
 		<>
-			<Navbar />
-			<div className={styles.body}>
-				<Sidebar setFilters={setFilters} />
-				<Catalog cards={filteredCards} />
+			<div className={styles.container}>
+				<div className={styles.body}>
+					<Sidebar setFilters={setFilters} />
+					<Catalog cards={filteredCards} setOpenModal={setOpenModal} handleSelectedCard={handleSelectedCard} />
+				</div>
 			</div>
+			{openModal === "catalogModal" && <CatalogModal setOpenModal={setOpenModal} selectedCard={selectedCard} />}
+			{openModal === "editCreateModal" && <EditCreateModal setOpenModal={setOpenModal} />}
+
 		</>
+
+
 	)
 }
 

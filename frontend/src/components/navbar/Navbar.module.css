@@ -1,79 +1,8 @@
-/* Navbar.css */
-body {
-  font-family: "Arial", sans-serif;
+.navBarImg {
+  width: 200px !important;
 }
 
-/* Main navbar styles */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  background-color: #333;
-  color: #fff;
-}
-
-.logo {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-/* Styling for the nav links */
-.navLinks {
-  display: flex;
-  list-style: none;
-}
-
-.navLinks li {
-  margin-left: 20px;
-}
-
-.navLinks a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 18px;
-}
-
-.navLinks a:hover {
-  text-decoration: underline;
-}
-
-/* Hide links on mobile initially */
-.burger {
-  display: none;
-}
-
-/* For mobile screens */
-@media (max-width: 768px) {
-  .nav-links {
-    position: absolute;
-    right: 0;
-    height: 100vh;
-    top: 0;
-    background-color: #333;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    transform: translateX(100%);
-    transition: transform 0.3s ease-in;
-  }
-
-  .nav-links.open {
-    transform: translateX(0);
-  }
-
-  .nav-links li {
-    margin: 20px 0;
-  }
-
-  .burger {
-    display: block;
-    cursor: pointer;
-  }
-
-  .burger div {
-    width: 25px;
-  }
+.background {
+  background-color: black;
+  font-size: 1.5rem;
 }

@@ -18,7 +18,7 @@ const Sidebar = ({ setFilters }) => {
 	}
 
 	return (
-		<Accordion alwaysOpen>
+		<Accordion alwaysOpen className={styles.sidebar}>
 			{
 				filters.map((filter, index) => (
 					<Accordion.Item key={index} eventKey={index}>
@@ -36,18 +36,6 @@ const Sidebar = ({ setFilters }) => {
 					</Accordion.Item>
 				))
 			}
-			{/* <Accordion.Item eventKey="0">
-				<Accordion.Header>Accordion Item #1</Accordion.Header>
-				<Accordion.Body>
-					Lorem ipsum d
-				</Accordion.Body>
-			</Accordion.Item>
-			<Accordion.Item eventKey="1">
-				<Accordion.Header>Accordion Item #2</Accordion.Header>
-				<Accordion.Body>
-					Lorem ipsum d
-				</Accordion.Body>
-			</Accordion.Item> */}
 		</Accordion>
 	);
 };
