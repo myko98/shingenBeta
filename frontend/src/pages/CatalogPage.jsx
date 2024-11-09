@@ -10,17 +10,17 @@ const fetchData = async (setCards) => {
 	try {
 		// live: https://shingenbeta.onrender.com/sake
 		// local: http://127.0.0.1:5000/sake
-		const response = await fetch('http://127.0.0.1:5000/sake')
+		const response = await fetch('http://127.0.0.1:5000/sake');
 		if (!response) {
-			throw new Error("Failed to fetch data")
+			throw new Error('Failed to fetch data');
 		}
-		const data = await response.json()
-		setCards(data)
-		console.log("DATA:", data)
+		const data = await response.json();
+		setCards(data);
+		console.log('DATA:', data);
 	} catch (error) {
-		console.log("Error: ", error)
+		console.log('Error: ', error);
 	}
-}
+};
 
 const CatalogPage = () => {
 	// state for filterings
@@ -38,20 +38,21 @@ const CatalogPage = () => {
 	}
 
 	// Fetch cards on load
-	useEffect(() => { fetchData(setCards) }, [])
+	useEffect(() => {
+		fetchData(setCards);
+	}, []);
 
 	// Filter cards
 	useEffect(() => {
-		console.log(filters)
 		if (filters.length === 0) {
-			setFilteredCards(cards)
+			setFilteredCards(cards);
 		} else {
-			const newCards = cards.filter(card => {
-				return filters.every(filter => {
-					return Object.values(card.properties).includes(filter)
-				})
-			})
-			setFilteredCards(newCards)
+			const newCards = cards.filter((card) => {
+				return filters.every((filter) => {
+					return Object.values(card.properties).includes(filter);
+				});
+			});
+			setFilteredCards(newCards);
 		}
 	}, [filters, cards])
 
@@ -75,4 +76,4 @@ const CatalogPage = () => {
 	)
 }
 
-export default CatalogPage
+export default CatalogPage;

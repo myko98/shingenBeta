@@ -29,6 +29,6 @@ const CatalogCard = ({ cardInfo, setOpenModal, handleSelectedCard }) => {
 			</Card.Footer>
 		</Card>
 	);
-}
+};
 
 export default CatalogCard;

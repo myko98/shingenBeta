@@ -18,6 +18,6 @@ const Catalog = ({ cards, setOpenModal, handleSelectedCard }) => {
 			</div>
 		</div>
 	);
-}
+};
 
 export default Catalog;

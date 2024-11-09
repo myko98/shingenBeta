@@ -21,6 +21,8 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['MONGO_URI'] = os.getenv('MONGO_URI')
 app.config.from_object(Config)
 
+print(f"MONGO_URI: {os.getenv('MONGO_URI')}")
+
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
