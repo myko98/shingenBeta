@@ -37,6 +37,18 @@ const CatalogPage = () => {
 		setSelectedCard(selectedCard)
 	}
 
+	const handleModalStatus = (status, modalType = "", card = null) => {
+		if (status === true) {
+			setOpenModal(modalType)
+			setSelectedCard(card)
+			console.log(card)
+		}
+		else {
+			setOpenModal("")
+			selectedCard(null)
+		}
+	}
+
 	// Fetch cards on load
 	useEffect(() => {
 		fetchData(setCards);
@@ -64,11 +76,11 @@ const CatalogPage = () => {
 			<div className={styles.container}>
 				<div className={styles.body}>
 					<Sidebar setFilters={setFilters} />
-					<Catalog cards={filteredCards} setOpenModal={setOpenModal} handleSelectedCard={handleSelectedCard} />
+					<Catalog cards={filteredCards} handleModalStatus={handleModalStatus} handleSelectedCard={handleSelectedCard} />
 				</div>
 			</div>
-			{openModal === "catalogModal" && <CatalogModal setOpenModal={setOpenModal} selectedCard={selectedCard} />}
-			{openModal === "editCreateModal" && <EditCreateModal setOpenModal={setOpenModal} />}
+			{openModal === "catalogModal" && <CatalogModal handleModalStatus={handleModalStatus} selectedCard={selectedCard} />}
+			{openModal === "editCreateModal" && <EditCreateModal setOpenModal={setOpenModal} selectedCard={selectedCard} />}
 
 		</>
 

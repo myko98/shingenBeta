@@ -1,19 +1,19 @@
 import styles from './CatalogModal.module.css';
 
-const CatalogModal = ({ setOpenModal, selectedCard }) => {
+const CatalogModal = ({ handleModalStatus, selectedCard }) => {
 
-	const { description, image_base64, name, properties, short_msg } = selectedCard
+	const { description, image_base64, name, properties, shortMessage } = selectedCard
 	console.log(selectedCard);
 
 	const propertiesArr = Object.entries(properties)
-	const short_message = short_msg ? short_msg : "default short msg"
+	const short_message = shortMessage ? shortMessage : "default short msg"
 
 	console.log(propertiesArr)
 
 	return (
-		<div className={styles.modalOverlay} onClick={() => setOpenModal("")}>
+		<div className={styles.modalOverlay} onClick={() => handleModalStatus(false)}>
 			<div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-				<button className={styles.closeButton} onClick={() => setOpenModal("")}>
+				<button className={styles.closeButton} onClick={() => handleModalStatus(false)}>
 					&times;
 				</button>
 				<img src={"data:image/jpeg;base64," + image_base64} />

@@ -75,29 +75,32 @@ class Sake:
 def add_sake():
     try:
         data = request.form
+        print(data)
         file = request.files['image']
         image_base64 = encode_image(file)
 
+				# change to all lowercase plz
         new_sake = {
             'name': data.get('name'),
             'properties': {
-                'Region': data.get('region'),
-                'Brewery': data.get('brewery'),
-                'Sizes': data.get('sizes'),
-                'Taste': data.get('taste'),
-                'Pairing': data.get('pairing'),
-                'Style': data.get('style'),
-                'Price': data.get('price'),
-                'Alchohol': data.get('alchohol'),
-                'Rice type': data.get('riceType'),
-                'Polish': data.get('polish'),
-                'Fermentation style': data.get('fermentationStyle'),
-                'Body': data.get('body'),
-                'In stock': data.get('inStock'),
-                'Expected date': data.get('expectedDate'),
+                'region': data.get('region'),
+                'brewery': data.get('brewery'),
+                'sizes': data.get('sizes'),
+                'taste': data.get('taste'),
+                'pairing': data.get('pairing'),
+                'style': data.get('style'),
+                'price': data.get('price'),
+                'alchohol': data.get('alchohol'),
+                'riceType': data.get('riceType'),
+                'polish': data.get('polish'),
+                'fermentationStyle': data.get('fermentationStyle'),
+                'body': data.get('body'),
+                'inStock': data.get('inStock'),
+                'expectedDate': data.get('expectedDate'),
             },
             'image_base64': image_base64,
             'description': data.get('description'),
+            'shortMessage': data.get('shortMessage'),
             'new': data.get('new')
         }
         result = Sake.add_sake(new_sake)
@@ -175,7 +178,7 @@ def update_sake(id):
         return jsonify({'error': str(e)}), 500
 
 @app.route('/sake/<id>', methods=['DELETE'])
-@login_required
+# @login_required incorporate this again once u add auth
 def delete_sake(id):
     try:
         result = Sake.delete_sake(ObjectId(id))
