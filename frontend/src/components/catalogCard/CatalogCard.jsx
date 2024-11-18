@@ -1,6 +1,6 @@
 import Card from 'react-bootstrap/Card';
 import styles from "./CatalogCard.module.css"
-const CatalogCard = ({ cardInfo, handleModalStatus, handleSelectedCard }) => {
+const CatalogCard = ({ cardInfo, handleModalStatus, handleSelectedCard, isAdmin }) => {
 
 	const { _id, description, image_base64, name, properties, shortMessage } = cardInfo
 	const price = properties.Price
@@ -10,11 +10,24 @@ const CatalogCard = ({ cardInfo, handleModalStatus, handleSelectedCard }) => {
 
 	const handleDelete = async (e) => {
 		e.stopPropagation()
+		const token = localStorage.getItem("token")
+
 		if (confirm(`Are you sure you want to delete ${name}?`) == true) {
-			await fetch(`http://127.0.0.1:5000/sake/${_id}`, {
-				method: "DELETE"
+			const response = await fetch(`http://127.0.0.1:5000/sake/${_id}`, {
+				method: "DELETE",
+				headers: {
+					"Authorization": token,
+					"Content-type": "application/json"
+				}
 			})
-			window.location.reload();  // This will trigger a full page reload
+			const data = await response.json();
+			console.log(data.message)
+			if (data.message) {
+				window.location.reload();  // This will trigger a full page reload
+			} else {
+				alert(data.error)
+			}
+			// window.location.reload();  // This will trigger a full page reload
 		}
 	}
 
@@ -38,8 +51,12 @@ const CatalogCard = ({ cardInfo, handleModalStatus, handleSelectedCard }) => {
 			</Card.Body>
 			<Card.Footer style={{ display: "flex" }}>
 				<p className="text-muted">Price: {price}</p>
-				<button onClick={(e) => handleEdit(e)}>Edit</button>
-				<button onClick={(e) => handleDelete(e)}>Delete</button>
+				{isAdmin &&
+					<>
+						<button onClick={(e) => handleEdit(e)}>Edit</button>
+						<button onClick={(e) => handleDelete(e)}>Delete</button>
+					</>
+				}
 			</Card.Footer>
 		</Card>
 	);

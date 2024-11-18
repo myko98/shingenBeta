@@ -22,7 +22,7 @@ const fetchData = async (setCards) => {
 	}
 };
 
-const CatalogPage = () => {
+const CatalogPage = ({ isAdmin }) => {
 	// state for filterings
 	// pass setter to sidebar
 	// fetch cards on the page. if filters are applied from sidebar, filter the
@@ -32,6 +32,7 @@ const CatalogPage = () => {
 	const [filteredCards, setFilteredCards] = useState([])
 	const [selectedCard, setSelectedCard] = useState(null)
 	const [openModal, setOpenModal] = useState("");
+	const [refreshCards, setRefreshCards] = useState(0);
 
 	const handleSelectedCard = (selectedCard) => {
 		setSelectedCard(selectedCard)
@@ -52,7 +53,7 @@ const CatalogPage = () => {
 	// Fetch cards on load
 	useEffect(() => {
 		fetchData(setCards);
-	}, []);
+	}, [refreshCards]);
 
 	// Filter cards
 	useEffect(() => {
@@ -76,11 +77,11 @@ const CatalogPage = () => {
 			<div className={styles.container}>
 				<div className={styles.body}>
 					<Sidebar setFilters={setFilters} />
-					<Catalog cards={filteredCards} handleModalStatus={handleModalStatus} handleSelectedCard={handleSelectedCard} />
+					<Catalog cards={filteredCards} handleModalStatus={handleModalStatus} handleSelectedCard={handleSelectedCard} isAdmin={isAdmin} />
 				</div>
 			</div>
 			{openModal === "catalogModal" && <CatalogModal handleModalStatus={handleModalStatus} selectedCard={selectedCard} />}
-			{openModal === "editCreateModal" && <EditCreateModal setOpenModal={setOpenModal} selectedCard={selectedCard} />}
+			{openModal === "editCreateModal" && <EditCreateModal setOpenModal={setOpenModal} selectedCard={selectedCard} setRefreshCards={setRefreshCards} />}
 
 		</>
 

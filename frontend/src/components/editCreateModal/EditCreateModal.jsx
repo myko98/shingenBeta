@@ -1,19 +1,22 @@
 import styles from "./EditCreateModal.module.css"
 import { useForm } from "react-hook-form"
 
-const EditCreateModal = ({ setOpenModal, selectedCard }) => {
+const EditCreateModal = ({ setOpenModal, selectedCard, setRefreshCards }) => {
 	const {
 		register,
 		handleSubmit,
 		watch,
 		formState: { errors },
-	} = useForm({ defaultValues: selectedCard || {} })
-
-	console.log(selectedCard)
+	} = useForm({ defaultValues: selectedCard || {} }) // sets default values if we are editing!
 
 	const onSubmit = async (data) => {
-		console.log("submitting data")
-		console.log(data)
+		const token = localStorage.getItem("token")
+		console.log("TOKEN: ", token)
+		const headers = {
+			"Authorization": token,
+		}
+		console.log(headers)
+
 		const formData = new FormData()
 		const properties = ["name", "shortMessage", "description", "region", "brewery", "sizes", "taste", "pairing", "style", "price", "alchohol", "riceType", "polish", "fermentationStyle", "body", "stock", "new", "expectedDate"]
 
@@ -23,17 +26,44 @@ const EditCreateModal = ({ setOpenModal, selectedCard }) => {
 			formData.append("image", data.image[0])
 		}
 
-		const response = await fetch('http://127.0.0.1:5000/sake', {
-			method: 'POST',
-			body: formData
-		})
+		// If selectedCard is undefined, we are adding a new Sake
+		if (selectedCard == undefined) {
+			console.log("selectedCard is undefined")
 
-		let result = await response.json()
+			const response = await fetch('http://127.0.0.1:5000/sake', {
+				method: 'POST',
+				headers: headers,
+				body: formData
+			})
 
-		if (result.message) {
-			alert(result.message)
-		} else {
-			alert(result.error)
+			let result = await response.json()
+
+			if (result.message) {
+				alert(result.message)
+				setOpenModal("")
+				setRefreshCards((prev) => prev + 1)
+			} else {
+				alert(result.error)
+			}
+		} else { // We are editing a Sake
+			console.log("editing")
+			console.log(selectedCard._id)
+
+			const response = await fetch(`http://127.0.0.1:5000/sake/${selectedCard._id}`, {
+				method: 'PUT',
+				headers: headers,
+				body: formData,
+			})
+
+			let result = await response.json()
+
+			if (result.message) {
+				alert(result.message)
+				setOpenModal("")
+				setRefreshCards((prev) => prev + 1)
+			} else {
+				alert(result.error)
+			}
 		}
 	}
 
@@ -45,7 +75,7 @@ const EditCreateModal = ({ setOpenModal, selectedCard }) => {
 				<form id="editForm" onSubmit={handleSubmit(onSubmit)}>
 					<div className="mb-3">
 						<label htmlFor="name" className="form-label">Name</label>
-						<input type="text" className="form-control" name="name" id="name" {...register("name", { required: true })} value={selectedCard ? selectedCard.name : ""} />
+						<input type="text" className="form-control" name="name" id="name" {...register("name", { required: true })} />
 					</div>
 
 					<div className="mb-3">
@@ -121,7 +151,7 @@ const EditCreateModal = ({ setOpenModal, selectedCard }) => {
 
 					<div className="mb-3">
 						<label htmlFor="image" className="form-label">Photo</label>
-						<input type="file" className="form-control" name="image" id="image" {...register("image", { required: true })} />
+						<input type="file" className="form-control" name="image" id="image" {...register("image")} />
 					</div>
 
 					<div className="mb-3">

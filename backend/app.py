@@ -2,31 +2,52 @@ import logging
 import base64
 from flask import Flask, request, jsonify
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
+from flask_login import (
+    LoginManager,
+    UserMixin,
+    login_user,
+    logout_user,
+    current_user,
+    login_required,
+)
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
-from dotenv import load_dotenv
+from dotenv import load_dotenv  # Allow us to load our .env variables into script
 from config import Config
 from flask_cors import CORS
+from pymongo import MongoClient
+from datetime import timedelta
+
 import os
 import json
+import secrets
 
 # Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
-app.config['ENV'] = 'development'
-app.config['DEBUG'] = True
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['MONGO_URI'] = os.getenv('MONGO_URI')
+
+# Base Flask Config
+app.config["ENV"] = "development"
+app.config["DEBUG"] = True
+# not sure what thsi is for, i also dont have any secret_key in .env
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+
+app.config["MONGO_URI"] = os.getenv("MONGO_URI")  # Connect with MongoDB
 app.config.from_object(Config)
 
-print(f"MONGO_URI: {os.getenv('MONGO_URI')}")
+# Flask Session Config
+app.config["SESSION_TYPE"] = "mongodb"
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_MONGODB"] = MongoClient(app.config["MONGO_URI"])
+app.config["SESSION_MONGODB_DB"] = "sakeDatabase"
+app.config["SESSION_MONGODB_COLLECT"] = "sessions"
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(
+    hours=1
+)  # does this delete the sessions after one hour in mongodb?
 
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
 
 CORS(app)
 
@@ -34,16 +55,13 @@ CORS(app)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class User(UserMixin):
-    def __init__(self, user_id):
-        self.id = user_id
+ACTIVE_TOKEN = None
 
-@login_manager.user_loader
-def load_user(user_id):
-    user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
-    if user:
-        return User(user_id=str(user["_id"]))
-    return None
+
+def verify_token(token):
+    global ACTIVE_TOKEN
+    return token == ACTIVE_TOKEN
+
 
 class Sake:
     def __init__(self, name, properties, image_base64):
@@ -71,143 +89,171 @@ class Sake:
     def delete_sake(sake_id):
         return mongo.db.sakes.delete_one({"_id": ObjectId(sake_id)})
 
-@app.route('/sake', methods=['POST'])
+
+@app.route("/sake", methods=["POST"])
 def add_sake():
     try:
+        token = request.headers.get("Authorization")
+        print("TOKEN: ", token)
+        if not verify_token(token):
+            return jsonify({"error": "NOT AUTHENTICATED"}), 403
+
+        print("receiving new sake info")
         data = request.form
         print(data)
-        file = request.files['image']
-        image_base64 = encode_image(file)
+        image_base64 = ""
 
-				# change to all lowercase plz
+        # If image exists, then add
+        if "image" in request.files:
+            file = request.files["image"]
+            image_base64 = encode_image(file)
+
         new_sake = {
-            'name': data.get('name'),
-            'properties': {
-                'region': data.get('region'),
-                'brewery': data.get('brewery'),
-                'sizes': data.get('sizes'),
-                'taste': data.get('taste'),
-                'pairing': data.get('pairing'),
-                'style': data.get('style'),
-                'price': data.get('price'),
-                'alchohol': data.get('alchohol'),
-                'riceType': data.get('riceType'),
-                'polish': data.get('polish'),
-                'fermentationStyle': data.get('fermentationStyle'),
-                'body': data.get('body'),
-                'inStock': data.get('inStock'),
-                'expectedDate': data.get('expectedDate'),
+            "name": data.get("name"),
+            "properties": {
+                "region": data.get("region"),
+                "brewery": data.get("brewery"),
+                "sizes": data.get("sizes"),
+                "taste": data.get("taste"),
+                "pairing": data.get("pairing"),
+                "style": data.get("style"),
+                "price": data.get("price"),
+                "alchohol": data.get("alchohol"),
+                "riceType": data.get("riceType"),
+                "polish": data.get("polish"),
+                "fermentationStyle": data.get("fermentationStyle"),
+                "body": data.get("body"),
+                "inStock": data.get("inStock"),
+                "expectedDate": data.get("expectedDate"),
             },
-            'image_base64': image_base64,
-            'description': data.get('description'),
-            'shortMessage': data.get('shortMessage'),
-            'new': data.get('new')
+            "image_base64": image_base64 if image_base64 else "",
+            "description": data.get("description"),
+            "shortMessage": data.get("shortMessage"),
+            "new": data.get("new"),
         }
         result = Sake.add_sake(new_sake)
-        return jsonify({'message': 'Sake added successfully'}), 201
+        return jsonify({"message": "Sake added successfully"}), 201
     except Exception as e:
-        logger.error('Error adding sake: %s', str(e))
-        return jsonify({'error': str(e)}), 500
+        logger.error("Error adding sake: %s", str(e))
+        return jsonify({"error": str(e)}), 500
+
 
 def encode_image(file):
-    return base64.b64encode(file.read()).decode('utf-8')
+    return base64.b64encode(file.read()).decode("utf-8")
 
-@app.route('/sake', methods=['GET'])
+
+@app.route("/sake", methods=["GET"])
 def get_all_sake():
     try:
         sakes = list(Sake.get_all_sake())
         for sake in sakes:
-            sake['_id'] = str(sake['_id'])
+            sake["_id"] = str(sake["_id"])
         return jsonify(sakes)
     except Exception as e:
-        logger.error('Error fetching sakes: %s', str(e))
-        return jsonify({'error': str(e)}), 500
+        logger.error("Error fetching sakes: %s", str(e))
+        return jsonify({"error": str(e)}), 500
 
-@app.route('/sake/<id>', methods=['GET'])
-@login_required
+
+@app.route("/sake/<id>", methods=["GET"])
 def get_sake_by_id(id):
     try:
         sake = Sake.get_sake_by_id(ObjectId(id))
         if sake:
-            sake['_id'] = str(sake['_id'])
+            sake["_id"] = str(sake["_id"])
             return jsonify(sake)
-        return jsonify({'error': 'Sake not found'}), 404
+        return jsonify({"error": "Sake not found"}), 404
     except Exception as e:
-        logger.error('Error fetching sake by ID: %s', str(e))
-        return jsonify({'error': str(e)}), 500
+        logger.error("Error fetching sake by ID: %s", str(e))
+        return jsonify({"error": str(e)}), 500
 
-@app.route('/sake/<id>', methods=['PUT'])
-@login_required
+
+@app.route("/sake/<id>", methods=["PUT"])
 def update_sake(id):
     try:
-        data = json.loads(request.form.get('data', '{}'))
+        token = request.headers.get("Authorization")
+        if not verify_token(token):
+            return jsonify({"error": "UNAUTHORIZED"}), 403
+
+        data = request.form
+        print(data)
+        image_base64 = ""
+
         updates = {
-            'name': data.get('name'),
-            'properties': {
-                'Region': data['properties'].get('Region'),
-                'Brewery': data['properties'].get('Brewery'),
-                'Sizes': data['properties'].get('Sizes'),
-                'Taste': data['properties'].get('Taste'),
-                'Pairing': data['properties'].get('Pairing'),
-                'Style': data['properties'].get('Style'),
-                'Price': data['properties'].get('Price'),
-                'Alchohol': data['properties'].get('Alchohol'),
-                'Rice type': data['properties'].get('Rice type'),
-                'Polish': data['properties'].get('Polish'),
-                'Fermentation style': data['properties'].get('Fermentation style'),
-                'Body': data['properties'].get('Body'),
-                'In stock': data['properties'].get('In stock'),
-                'Expected date': data['properties'].get('Expected date'),
+            "name": data.get("name"),
+            "properties": {
+                "region": data.get("region"),
+                "brewery": data.get("brewery"),
+                "sizes": data.get("sizes"),
+                "taste": data.get("taste"),
+                "pairing": data.get("pairing"),
+                "style": data.get("style"),
+                "price": data.get("price"),
+                "alchohol": data.get("alchohol"),
+                "riceType": data.get("riceType"),
+                "polish": data.get("polish"),
+                "fermentationStyle": data.get("fermentationStyle"),
+                "body": data.get("body"),
+                "inStock": data.get("inStock"),
+                "expectedDate": data.get("expectedDate"),
             },
-            'description': data.get('description'),
-            'new': data.get('new')
+            "image_base64": image_base64 if image_base64 else "",
+            "description": data.get("description"),
+            "shortMessage": data.get("shortMessage"),
+            "new": data.get("new"),
         }
 
-        if 'image' in request.files:
-            file = request.files['image']
+        if "image" in request.files:
+            file = request.files["image"]
             if file:
                 image_base64 = encode_image(file)
-                updates['image_base64'] = image_base64
+                updates["image_base64"] = image_base64
 
         result = Sake.update_sake(ObjectId(id), updates)
         if result.matched_count == 0:
-            return jsonify({'error': 'Sake not found'}), 404
-        return jsonify(updates)
+            return jsonify({"error": "Sake not found"}), 404
+        return jsonify({"message": "Sake edited successfully"}), 201
     except Exception as e:
-        logger.error('Error updating sake: %s', str(e))
-        return jsonify({'error': str(e)}), 500
+        logger.error("Error updating sake: %s", str(e))
+        return jsonify({"error": str(e)}), 500
 
-@app.route('/sake/<id>', methods=['DELETE'])
-# @login_required incorporate this again once u add auth
+
+@app.route("/sake/<id>", methods=["DELETE"])
 def delete_sake(id):
     try:
+        token = request.headers.get("Authorization")
+        if not verify_token(token):
+            return jsonify({"error": "UNAUTHORIZED"}), 403
         result = Sake.delete_sake(ObjectId(id))
         if result.deleted_count == 0:
-            return jsonify({'error': 'Sake not found'}), 404
-        return jsonify({'message': 'Sake deleted'}), 200
+            return jsonify({"error": "Sake not found"}), 404
+        return jsonify({"message": "Sake deleted"}), 200
     except Exception as e:
-        logger.error('Error deleting sake: %s', str(e))
-        return jsonify({'error': str(e)}), 500
+        logger.error("Error deleting sake: %s", str(e))
+        return jsonify({"error": str(e)}), 500
 
-@app.route("/login", methods=['POST'])
+
+@app.route("/login", methods=["POST"])
 def login():
-    if request.method == 'POST':
-        username = request.json.get('username')
-        password = request.json.get('password')
-        user = mongo.db.users.find_one({"username": username})
+    data = request.form
+    print(data)
+    global ACTIVE_TOKEN
+    # Add to ENV!!!!!!!
+    if data.get("username") == os.getenv("LOGIN_USER") and data.get(
+        "password"
+    ) == os.getenv("LOGIN_PW"):
+        # if admin credentials are ccorrect, we return a secret token
+        ACTIVE_TOKEN = secrets.token_hex(32)
+        return jsonify({"token": ACTIVE_TOKEN}), 200
+    return jsonify({"error": "could not authenticate"}), 401
 
-        if user and bcrypt.check_password_hash(user['password'], password):
-            user_obj = User(user['_id'])
-            login_user(user_obj)
-            return jsonify({'message': 'Login successful'}), 200
 
-        return jsonify({'error': 'Invalid username or password'}), 401
-
-@app.route('/logout', methods=['POST'])
-@login_required
+@app.route("/logout", methods=["POST"])
 def logout():
-    logout_user()
-    return jsonify({'message': 'Logged out successfully'}), 200
+    # Set the active token to be none
+    global ACTIVE_TOKEN
+    ACTIVE_TOKEN = None
+    return jsonify({"message": "Logged out successfully"}), 200
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)
