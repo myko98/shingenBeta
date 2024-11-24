@@ -1,3 +1,20 @@
 .sidebar {
-  margin-right: 20px;
+  margin: 20px 20px 0 20px;
+  width: 25%;
+  font-size: 1.3em;
+}
+
+.item {
+  background-color: black;
+  color: white;
+}
+
+.header button {
+  font-size: 1.3rem !important;
+  background-color: black;
+  color: white;
+}
+
+.checkbox {
+  margin-right: 1rem;
 }

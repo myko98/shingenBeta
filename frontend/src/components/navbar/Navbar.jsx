@@ -4,9 +4,14 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import ShingenLogo from '../../assets/mainPage/Shingen-White-Logo.png'
 import styles from './Navbar.module.css'
-import { Link } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
+import { HashLink } from 'react-router-hash-link'
 
 function BasicExample() {
+
+	// returns a location object that includes info like pathname, hash (url path)
+	const location = useLocation()
+	console.log(location)
 	return (
 		<Navbar expand="lg" sticky="top" data-bs-theme="dark" className={styles.background}>
 			<Container>
@@ -20,17 +25,17 @@ function BasicExample() {
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
 				<Navbar.Collapse id="basic-navbar-nav">
 					<Nav className="ms-auto">
-						<Nav.Link href="/#home">HOME</Nav.Link>
-						<Nav.Link href="/#menu">MENU</Nav.Link>
-						<Nav.Link href="/#reservations">RESERVATIONS</Nav.Link>
-						<Nav.Link href="/#location">LOCATION</Nav.Link>
-						<Nav.Link>
-							<Link to="/catalog" style={{ textDecoration: 'none', color: 'inherit' }}>CATALOG</Link>
+						<Nav.Link as={HashLink} to="/#home" className={location.hash === "#home" ? "active" : ""} >HOME</Nav.Link>
+						<Nav.Link as={HashLink} to="/#menu" className={location.hash === "#menu" ? "active" : ""}>MENU</Nav.Link>
+						<Nav.Link as={HashLink} to="/#reservations" className={location.hash === "#reservations" ? "active" : ""}>RESERVATIONS</Nav.Link>
+						<Nav.Link as={HashLink} to="/#location" className={location.hash === "#location" ? "active" : ""}>LOCATION</Nav.Link>
+						<Nav.Link as={NavLink} to="/catalog" exact activeClassName="active">
+							CATALOG
 						</Nav.Link>
 					</Nav>
 				</Navbar.Collapse>
 			</Container>
-		</Navbar>
+		</Navbar >
 	);
 }
 

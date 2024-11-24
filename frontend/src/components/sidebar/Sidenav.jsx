@@ -18,15 +18,15 @@ const Sidebar = ({ setFilters }) => {
 	}
 
 	return (
-		<Accordion alwaysOpen className={styles.sidebar}>
+		<Accordion alwaysOpen className={styles.sidebar} defaultActiveKey={["0", "1", "2", "3"]}>
 			{
 				filters.map((filter, index) => (
-					<Accordion.Item key={index} eventKey={index}>
-						<Accordion.Header>{filter.section}</Accordion.Header>
-						<Accordion.Body>
+					<Accordion.Item key={index} eventKey={index.toString()} className={styles.item}>
+						<Accordion.Header className={`${styles.header} ${styles.item}`}>{filter.section}</Accordion.Header>
+						<Accordion.Body className={styles.item}>
 							{filter.fields.map(property => (
 								<>
-									<input key={property.id} id={property.id} type="checkbox" name={property.id} value={property.value} onClick={(e) => handleClick(e)}></input>
+									<input className={styles.checkbox} key={property.id} id={property.id} type="checkbox" name={property.id} value={property.value} onClick={(e) => handleClick(e)}></input>
 									<label htmlFor={property.id} onClick={(e) => handleClick(e)}>{property.value}</label>
 									<br />
 								</>

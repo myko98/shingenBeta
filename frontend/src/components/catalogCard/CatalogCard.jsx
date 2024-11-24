@@ -39,18 +39,25 @@ const CatalogCard = ({ cardInfo, handleModalStatus, handleSelectedCard, isAdmin 
 	return (
 		<Card className={styles.cardContainer} onClick={() => handleModalStatus(true, "catalogModal", cardInfo)}>
 			<Card.Img variant="top" src={"data:image/jpeg;base64," + image_base64} className={styles.imageSize} />
-			<Card.Body className={styles.cardBody}>
-				<Card.Title className={styles.title}>
-					<h4>{name}</h4>
-				</Card.Title>
-				<Card.Text className={styles.description}>
-					{short_message}
-					<br />
-					Available Sizes: {properties.Sizes}
-				</Card.Text>
+
+			<Card.Title className={styles.title}>
+				<h4>{name}</h4>
+			</Card.Title>
+
+			<Card.Body>
+				<div className={styles.description}>
+					<Card.Text>
+						<div>
+							Sizes: {properties.Sizes}
+						</div>
+						<div>
+							{short_message}
+						</div>
+					</Card.Text>
+				</div>
 			</Card.Body>
-			<Card.Footer style={{ display: "flex" }}>
-				<p className="text-muted">Price: {price}</p>
+			<Card.Footer className={styles.cardFooter}>
+				<p >Price: {price}</p>
 				{isAdmin &&
 					<>
 						<button onClick={(e) => handleEdit(e)}>Edit</button>
@@ -58,7 +65,7 @@ const CatalogCard = ({ cardInfo, handleModalStatus, handleSelectedCard, isAdmin 
 					</>
 				}
 			</Card.Footer>
-		</Card>
+		</Card >
 	);
 };
 

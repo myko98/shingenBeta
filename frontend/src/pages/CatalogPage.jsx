@@ -34,6 +34,8 @@ const CatalogPage = ({ isAdmin }) => {
 	const [openModal, setOpenModal] = useState("");
 	const [refreshCards, setRefreshCards] = useState(0);
 
+	const [sortBy, setSortBy] = useState("featured")
+
 	const handleSelectedCard = (selectedCard) => {
 		setSelectedCard(selectedCard)
 	}
@@ -70,6 +72,24 @@ const CatalogPage = ({ isAdmin }) => {
 	}, [filters, cards])
 
 	// console.log("CARDS in CATALOGPAGE:", cards)
+	useEffect(() => {
+		console.log("SORT BYE: ", sortBy)
+		if (sortBy === "featured") {
+			setFilteredCards(cards)
+		}
+
+		let sortedCards = [...cards]
+
+		if (sortBy === "price_low_high") {
+			sortedCards = sortedCards.sort((a, b) => parseFloat(a.properties.Price) - parseFloat(b.properties.Price))
+		} else if (sortBy === "price_high_low") {
+			sortedCards = sortedCards.sort((a, b) => parseFloat(b.properties.Price) - parseFloat(a.properties.Price))
+		} else if (sortBy === "a_z") {
+			sortedCards = sortedCards.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase))
+		}
+		setFilteredCards(sortedCards)
+
+	}, [sortBy, cards])
 
 
 	return (
@@ -77,7 +97,9 @@ const CatalogPage = ({ isAdmin }) => {
 			<div className={styles.container}>
 				<div className={styles.body}>
 					<Sidebar setFilters={setFilters} />
-					<Catalog cards={filteredCards} handleModalStatus={handleModalStatus} handleSelectedCard={handleSelectedCard} isAdmin={isAdmin} />
+					<div>
+						<Catalog cards={filteredCards} handleModalStatus={handleModalStatus} handleSelectedCard={handleSelectedCard} isAdmin={isAdmin} setSortBy={setSortBy} sortBy={sortBy} />
+					</div>
 				</div>
 			</div>
 			{openModal === "catalogModal" && <CatalogModal handleModalStatus={handleModalStatus} selectedCard={selectedCard} />}

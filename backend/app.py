@@ -196,12 +196,12 @@ def update_sake(id):
                 "inStock": data.get("inStock"),
                 "expectedDate": data.get("expectedDate"),
             },
-            "image_base64": image_base64 if image_base64 else "",
             "description": data.get("description"),
             "shortMessage": data.get("shortMessage"),
             "new": data.get("new"),
         }
 
+        # If image is uploaded, then update, else don't change the prev image!
         if "image" in request.files:
             file = request.files["image"]
             if file:
