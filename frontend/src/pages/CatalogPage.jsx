@@ -5,7 +5,7 @@ import Catalog from '../components/catalog/Catalog';
 import styles from './CatalogPage.module.css'
 import CatalogModal from '../components/catalogModal/CatalogModal'
 
-const CatalogPage = ({ isAdmin }) => {
+const CatalogPage = () => {
 	// state for filterings
 	// pass setter to sidebar
 	// fetch cards on the page. if filters are applied from sidebar, filter the
@@ -117,14 +117,12 @@ const CatalogPage = ({ isAdmin }) => {
 				<div className={styles.body}>
 					<Sidebar setFilters={setFilters} />
 					<div>
-						<Catalog cards={filteredCards} handleModalStatus={handleModalStatus} handleSelectedCard={handleSelectedCard} isAdmin={isAdmin} setSortBy={setSortBy} sortBy={sortBy} />
+						<Catalog cards={filteredCards} handleModalStatus={handleModalStatus} handleSelectedCard={handleSelectedCard} setSortBy={setSortBy} sortBy={sortBy} />
 					</div>
 				</div>
 			</div>
 			{openModal === "catalogModal" && <CatalogModal handleModalStatus={handleModalStatus} selectedCard={selectedCard} />}
 		</>
-
-
 	)
 }
 

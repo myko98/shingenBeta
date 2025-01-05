@@ -12,7 +12,7 @@ function App() {
 				<Navbar />
 				<Routes>
 					<Route path="/" element={<HomePage />} />
-					<Route path="/catalog" element={<CatalogPage isAdmin={isAdmin} />} />
+					<Route path="/catalog" element={<CatalogPage />} />
 				</Routes>
 			</Router>
 		</div>

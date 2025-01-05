@@ -1,7 +1,7 @@
 import CatalogCard from '../catalogCard/CatalogCard';
 import styles from './Catalog.module.css'; // Assuming you're using CSS Modules
 
-const Catalog = ({ cards, handleModalStatus, handleSelectedCard, isAdmin, setSortBy, sortBy }) => {
+const Catalog = ({ cards, handleModalStatus, handleSelectedCard, setSortBy, sortBy }) => {
 	return (
 		<div>
 			<div>
@@ -18,7 +18,7 @@ const Catalog = ({ cards, handleModalStatus, handleSelectedCard, isAdmin, setSor
 			<div className={styles.catalogGrid}>
 				{cards.length > 0 ? (
 					cards.map((card) => (
-						<CatalogCard key={card.id} cardInfo={card} handleModalStatus={handleModalStatus} handleSelectedCard={handleSelectedCard} isAdmin={isAdmin} />
+						<CatalogCard key={card.id} cardInfo={card} handleModalStatus={handleModalStatus} handleSelectedCard={handleSelectedCard} />
 					))
 				) : (
 					<div>No cards</div>
