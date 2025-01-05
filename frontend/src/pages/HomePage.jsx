@@ -16,8 +16,6 @@ import Reservations from '../assets/mainPage/Reservations.jpg'
 import ShingenCrest from '../assets/mainPage/Shingen-White-Crest.png'
 import styles from './HomePage.module.css'
 
-import Navbar from '../components/navbar/Navbar'
-
 
 const HomePage = () => {
 	return (

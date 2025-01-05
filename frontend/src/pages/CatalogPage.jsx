@@ -4,23 +4,6 @@ import Sidebar from '../components/sidebar/Sidenav';
 import Catalog from '../components/catalog/Catalog';
 import styles from './CatalogPage.module.css'
 import CatalogModal from '../components/catalogModal/CatalogModal'
-import EditCreateModal from '../components/editCreateModal/EditCreateModal'
-
-const fetchData = async (setCards) => {
-	try {
-		// live: https://shingenbeta.onrender.com/sake
-		// local: http://127.0.0.1:5000/sake
-		const response = await fetch('http://127.0.0.1:5000/sake');
-		if (!response) {
-			throw new Error('Failed to fetch data');
-		}
-		const data = await response.json();
-		setCards(data);
-		console.log('DATA:', data);
-	} catch (error) {
-		console.log('Error: ', error);
-	}
-};
 
 const CatalogPage = ({ isAdmin }) => {
 	// state for filterings
@@ -32,8 +15,6 @@ const CatalogPage = ({ isAdmin }) => {
 	const [filteredCards, setFilteredCards] = useState([])
 	const [selectedCard, setSelectedCard] = useState(null)
 	const [openModal, setOpenModal] = useState("");
-	const [refreshCards, setRefreshCards] = useState(0);
-
 	const [sortBy, setSortBy] = useState("featured")
 
 	const handleSelectedCard = (selectedCard) => {
@@ -44,7 +25,6 @@ const CatalogPage = ({ isAdmin }) => {
 		if (status === true) {
 			setOpenModal(modalType)
 			setSelectedCard(card)
-			console.log(card)
 		}
 		else {
 			setOpenModal("")
@@ -52,16 +32,56 @@ const CatalogPage = ({ isAdmin }) => {
 		}
 	}
 
-	// Fetch cards on load
+	const fetchData = async () => {
+		try {
+			const response = await fetch(
+				`https://cdn.contentful.com/spaces/${import.meta.env.VITE_CONTENTFUL_SPACE_ID}/environments/master/entries?access_token=${import.meta.env.VITE_CONTENTFUL_ACCESS_ID}&content_type=sake`
+			);
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
+			}
+			const data = await response.json();
+			console.log("CONTENTFUL")
+			console.log(data)
+
+			const items = data.items.map((item) => {
+				const imageId = item.fields.sakeImage.sys.id; // Get the image ID
+				const asset = data.includes.Asset.find((a) => a.sys.id === imageId); // Find the matching asset
+				const imageUrl = asset ? `https:${asset.fields.file.url}` : ''; // Get the image URL if asset is found
+
+				const { cardMessage, description, name, price, sakeImage, ...properties } = item.fields
+
+				return {
+					id: item.sys.id,
+					name,
+					price,
+					cardMessage,
+					description,
+					properties: { ...properties },
+					image: imageUrl, // Set resolved image URL
+				};
+			});
+
+			console.log("Mapped Items:", items); // Check the mapped items
+			setCards(items)
+
+		} catch (error) {
+			console.error('Error fetching data:', error);
+		}
+	};
+
 	useEffect(() => {
-		fetchData(setCards);
-	}, [refreshCards]);
+		fetchData();
+	}, []);
 
 	// Filter cards
 	useEffect(() => {
+		// if no filters selected, then select all cards
 		if (filters.length === 0) {
 			setFilteredCards(cards);
-		} else {
+		}
+		// else filter cards based on selected properties
+		else {
 			const newCards = cards.filter((card) => {
 				return filters.every((filter) => {
 					return Object.values(card.properties).includes(filter);
@@ -71,26 +91,25 @@ const CatalogPage = ({ isAdmin }) => {
 		}
 	}, [filters, cards])
 
-	// console.log("CARDS in CATALOGPAGE:", cards)
-	useEffect(() => {
-		console.log("SORT BYE: ", sortBy)
-		if (sortBy === "featured") {
-			setFilteredCards(cards)
-		}
+	// TODO: not sure if this is needed anymore. will comment out for now.
+	// useEffect(() => {
+	// 	console.log("SORT BYE: ", sortBy)
+	// 	if (sortBy === "featured") {
+	// 		setFilteredCards(cards)
+	// 	}
 
-		let sortedCards = [...cards]
+	// 	let sortedCards = [...cards]
 
-		if (sortBy === "price_low_high") {
-			sortedCards = sortedCards.sort((a, b) => parseFloat(a.properties.Price) - parseFloat(b.properties.Price))
-		} else if (sortBy === "price_high_low") {
-			sortedCards = sortedCards.sort((a, b) => parseFloat(b.properties.Price) - parseFloat(a.properties.Price))
-		} else if (sortBy === "a_z") {
-			sortedCards = sortedCards.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase))
-		}
-		setFilteredCards(sortedCards)
+	// 	if (sortBy === "price_low_high") {
+	// 		sortedCards = sortedCards.sort((a, b) => parseFloat(a.properties.Price) - parseFloat(b.properties.Price))
+	// 	} else if (sortBy === "price_high_low") {
+	// 		sortedCards = sortedCards.sort((a, b) => parseFloat(b.properties.Price) - parseFloat(a.properties.Price))
+	// 	} else if (sortBy === "a_z") {
+	// 		sortedCards = sortedCards.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase))
+	// 	}
+	// 	setFilteredCards(sortedCards)
 
-	}, [sortBy, cards])
-
+	// }, [sortBy, cards])
 
 	return (
 		<>
@@ -103,8 +122,6 @@ const CatalogPage = ({ isAdmin }) => {
 				</div>
 			</div>
 			{openModal === "catalogModal" && <CatalogModal handleModalStatus={handleModalStatus} selectedCard={selectedCard} />}
-			{openModal === "editCreateModal" && <EditCreateModal setOpenModal={setOpenModal} selectedCard={selectedCard} setRefreshCards={setRefreshCards} />}
-
 		</>
 
 
