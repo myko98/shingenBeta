@@ -3,6 +3,17 @@
   src: url(../src/assets/font/tw-cen-mt-bold.ttf);
 }
 
+* {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: "tw", Arial, Helvetica, sans-serif;
   color: white !important;

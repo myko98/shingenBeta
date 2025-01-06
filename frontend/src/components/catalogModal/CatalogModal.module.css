@@ -13,11 +13,12 @@
 
 .modalContent {
   background: black;
-  padding: 20px;
+  padding: 10px;
   border-radius: 8px;
   width: 90%;
-  max-width: 900px;
-  max-height: 900px;
+  max-width: 700px;
+  min-height: 60vh; /* Covers most of the screen height on mobile */
+  max-height: 90vh; /* Prevents overflow on very tall screens */
   position: relative;
   color: white;
   display: flex;
@@ -29,7 +30,7 @@
   /* Limit image height to prevent overflow */
   max-height: 900px;
   height: auto;
-  object-fit: contain;
+  /* object-fit: contain; */
   border-radius: 2px;
 }
 
@@ -46,8 +47,8 @@
 
 .properties {
   border: 1px solid white;
-  /* width: 100%; */
   border-radius: 3px;
+  width: 100%;
   /* overflow: scroll; */
 }
 
@@ -63,7 +64,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  max-width: 50%;
+  width: 50%;
 }
 
 p {
