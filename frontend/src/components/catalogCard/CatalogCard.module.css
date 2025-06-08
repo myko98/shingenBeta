@@ -8,6 +8,7 @@
   border: 1px solid white;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
 }
 
 .cardContainer:hover {
@@ -32,6 +33,10 @@
   border-bottom: 1px solid white;
 }
 
+.description {
+  padding: 0.2rem 0.2rem !important;
+}
+
 .cardBody {
   height: 250px;
   border: 1px solid white;
@@ -41,4 +46,5 @@
   display: flex;
   color: white;
   border: 1px solid white;
+  justify-content: space-around;
 }

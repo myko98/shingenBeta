@@ -5,16 +5,19 @@ import Catalog from '../components/catalog/Catalog';
 import styles from './CatalogPage.module.css'
 import CatalogModal from '../components/catalogModal/CatalogModal'
 
+// Page that houses the Catalog and Sidebar components
 const CatalogPage = () => {
 	// state for filterings
 	// pass setter to sidebar
 	// fetch cards on the page. if filters are applied from sidebar, filter the
 	// cards and send the result into catalog
 	const [filters, setFilters] = useState([])
+	// Original cards
 	const [cards, setCards] = useState([])
 	const [filteredCards, setFilteredCards] = useState([])
 	const [selectedCard, setSelectedCard] = useState(null)
 	const [openModal, setOpenModal] = useState("");
+	// Sorted dropdown value
 	const [sortBy, setSortBy] = useState("featured")
 
 	const handleSelectedCard = (selectedCard) => {
@@ -32,6 +35,7 @@ const CatalogPage = () => {
 		}
 	}
 
+	// Fetches data from Contentful API
 	const fetchData = async () => {
 		try {
 			const response = await fetch(
@@ -41,9 +45,8 @@ const CatalogPage = () => {
 				throw new Error(`HTTP error! Status: ${response.status}`);
 			}
 			const data = await response.json();
-			console.log("CONTENTFUL")
-			console.log(data)
 
+			// Iterate data and set items state
 			const items = data.items.map((item) => {
 				const imageId = item.fields.sakeImage.sys.id; // Get the image ID
 				const asset = data.includes.Asset.find((a) => a.sys.id === imageId); // Find the matching asset
@@ -62,7 +65,7 @@ const CatalogPage = () => {
 				};
 			});
 
-			console.log("Mapped Items:", items); // Check the mapped items
+			// console.log("Mapped Items:", items); // Check the mapped items
 			setCards(items)
 
 		} catch (error) {
@@ -91,25 +94,33 @@ const CatalogPage = () => {
 		}
 	}, [filters, cards])
 
-	// TODO: not sure if this is needed anymore. will comment out for now.
-	// useEffect(() => {
-	// 	console.log("SORT BYE: ", sortBy)
-	// 	if (sortBy === "featured") {
-	// 		setFilteredCards(cards)
-	// 	}
+	// Updates list of cards when sort by filter value is changed
+	useEffect(() => {
+		console.log(cards)
+		// New filtered cards
+		let filteredCards
+		if (sortBy === "price_low_high") {
+			filteredCards = [...cards].sort((a, b) => a.price - b.price)
+			setFilteredCards(filteredCards);
+		}
+		else if (sortBy === "price_high_low") {
+			filteredCards = [...cards].sort((a, b) => b.price - a.price)
+			setFilteredCards(filteredCards);
+		}
+		// Filter for sakes that have the new label
+		else if (sortBy === "new_arrivals") {
+			filteredCards = [...cards].filter((card) => card.properties.new === true)
+			console.log(filteredCards)
+			setFilteredCards(filteredCards);
+		}
+		// Sort alphabetically
+		else if (sortBy === "a_z") { console.log("high low") }
+		// Sort reverse alphabetically
+		else if (sortBy === "z_a") { console.log("high low") }
+		// Default state
+		else if (sortBy === "featured") { setFilteredCards(cards) }
 
-	// 	let sortedCards = [...cards]
-
-	// 	if (sortBy === "price_low_high") {
-	// 		sortedCards = sortedCards.sort((a, b) => parseFloat(a.properties.Price) - parseFloat(b.properties.Price))
-	// 	} else if (sortBy === "price_high_low") {
-	// 		sortedCards = sortedCards.sort((a, b) => parseFloat(b.properties.Price) - parseFloat(a.properties.Price))
-	// 	} else if (sortBy === "a_z") {
-	// 		sortedCards = sortedCards.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase))
-	// 	}
-	// 	setFilteredCards(sortedCards)
-
-	// }, [sortBy, cards])
+	}, [sortBy, cards])
 
 	return (
 		<>

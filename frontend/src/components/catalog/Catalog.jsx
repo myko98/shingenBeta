@@ -2,11 +2,17 @@ import CatalogCard from '../catalogCard/CatalogCard';
 import styles from './Catalog.module.css'; // Assuming you're using CSS Modules
 
 const Catalog = ({ cards, handleModalStatus, handleSelectedCard, setSortBy, sortBy }) => {
+
+	const handleSortBy = (e) => {
+		setSortBy(e.target.value)
+		console.log(e.target.value)
+	}
 	return (
 		<div>
+			{/* Sort By dropdown */}
 			<div>
 				<label htmlFor="sortBy">Sort by:</label>
-				<select value={sortBy} onChange={e => setSortBy(e.target.value)} name="sortBy" id="sortBy">
+				<select value={sortBy} onChange={e => handleSortBy(e)} name="sortBy" id="sortBy">
 					<option value="featured">Featured</option>
 					<option value="price_low_high">Price (Low-High)</option>
 					<option value="price_high_low">Price (High-Low)</option>
