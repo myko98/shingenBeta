@@ -72,12 +72,11 @@ const CatalogPage = () => {
 			console.error('Error fetching data:', error);
 		}
 	};
-
 	useEffect(() => {
 		fetchData();
 	}, []);
 
-	// Filter cards
+	// Filter cards (Based on Side Nav Bar)
 	useEffect(() => {
 		// if no filters selected, then select all cards
 		if (filters.length === 0) {
@@ -94,7 +93,7 @@ const CatalogPage = () => {
 		}
 	}, [filters, cards])
 
-	// Updates list of cards when sort by filter value is changed
+	// Updates list of cards when SORT BY filter value is changed
 	useEffect(() => {
 		console.log(cards)
 		// New filtered cards
@@ -109,15 +108,26 @@ const CatalogPage = () => {
 		}
 		// Filter for sakes that have the new label
 		else if (sortBy === "new_arrivals") {
+			console.log(cards)
 			filteredCards = [...cards].filter((card) => card.properties.new === true)
 			console.log(filteredCards)
 			setFilteredCards(filteredCards);
 		}
 		// Sort alphabetically
-		else if (sortBy === "a_z") { console.log("high low") }
+		else if (sortBy === "a_z") {
+			filteredCards = [...cards].sort((a, b) => {
+				return a.name.localeCompare(b.name)
+			})
+			console.log("Filtered cards")
+			setFilteredCards(filteredCards)
+		}
 		// Sort reverse alphabetically
-		else if (sortBy === "z_a") { console.log("high low") }
-		// Default state
+		else if (sortBy === "z_a") {
+			filteredCards = [...cards].sort((a, b) => {
+				return b.name.localeCompare(a.name)
+			})
+			setFilteredCards(filteredCards)
+		}
 		else if (sortBy === "featured") { setFilteredCards(cards) }
 
 	}, [sortBy, cards])
@@ -128,6 +138,8 @@ const CatalogPage = () => {
 				<div className={styles.body}>
 					<Sidebar setFilters={setFilters} />
 					<div>
+						<h1>Premium Sake Collection</h1>
+						<p>Discover our curated selection of authentic Japanese sake from renowned breweries across Japan</p>
 						<Catalog cards={filteredCards} handleModalStatus={handleModalStatus} handleSelectedCard={handleSelectedCard} setSortBy={setSortBy} sortBy={sortBy} />
 					</div>
 				</div>
