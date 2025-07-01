@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -18,7 +22,7 @@
   width: 90%;
   max-width: 700px;
   min-height: 60vh; /* Covers most of the screen height on mobile */
-  max-height: 90vh; /* Prevents overflow on very tall screens */
+  max-height: 82vh; /* Prevents overflow on very tall screens */
   position: relative;
   color: white;
   display: flex;

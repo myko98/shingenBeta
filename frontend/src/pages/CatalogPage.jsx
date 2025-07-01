@@ -138,8 +138,10 @@ const CatalogPage = () => {
 				<div className={styles.body}>
 					<Sidebar setFilters={setFilters} />
 					<div>
-						<h1>Premium Sake Collection</h1>
-						<p>Discover our curated selection of authentic Japanese sake from renowned breweries across Japan</p>
+						<div className={styles.header}>
+							<h1>Premium Sake Collection</h1>
+							<p>Discover our curated selection of authentic Japanese sake from renowned breweries across Japan</p>
+						</div>
 						<Catalog cards={filteredCards} handleModalStatus={handleModalStatus} handleSelectedCard={handleSelectedCard} setSortBy={setSortBy} sortBy={sortBy} />
 					</div>
 				</div>
