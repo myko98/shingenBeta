@@ -5,7 +5,7 @@ const CatalogModal = ({ handleModalStatus, selectedCard }) => {
 	console.log(selectedCard);
 	const { name, image, description, price, properties } = selectedCard
 
-	const PROPERTIES = [["alchoholPercentage", "Alchohol Percentage"]
+	const PROPERTIES = [["alchoholPercentage", "Alchohol %"]
 		, ["body", "Body"]
 		, ["brewery", "Brewery"]
 		, ["fermentationStyle", "Fermentation Style"]
@@ -28,10 +28,13 @@ const CatalogModal = ({ handleModalStatus, selectedCard }) => {
 				<div className={styles.description}>
 					<div className={styles.header}>
 						<h2>{name}</h2>
-						<h2>Price: {price}</h2>
-						<h2>Product Details</h2>
+						<h4>Price: {price}</h4>
+						<h4>Tasting Notes</h4>
 						<p>{description}</p>
+						<h4>Food pairings</h4>
+						<p>{properties.pairing}</p>
 					</div>
+					<h4>Specifications</h4>
 					<div className={styles.properties}>
 						{PROPERTIES.map((pair) =>
 							<div key={pair[0]} className={styles.gridRow}>

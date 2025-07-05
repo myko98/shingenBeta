@@ -1,10 +1,9 @@
-/* @font-face {
-  font-family: tw;
-  src: url(../src/assets/font/tw-cen-mt-bold.ttf);
-} */
-
 * {
   box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
 }
 
 h1,
@@ -18,14 +17,11 @@ body {
   font-family: "tw-bold", Arial, Helvetica, sans-serif;
   color: white !important;
   background-color: black;
+  font-size: 1rem;
 }
 
 .appContainer {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-}
-
-p {
-  font-size: 1.2rem;
 }

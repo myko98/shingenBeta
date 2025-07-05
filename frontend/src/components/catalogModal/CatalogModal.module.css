@@ -2,6 +2,10 @@
   box-sizing: border-box;
 }
 
+p {
+  font-family: "tw";
+}
+
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -15,47 +19,6 @@
   z-index: 1000;
 }
 
-.modalContent {
-  background: black;
-  padding: 10px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 700px;
-  min-height: 60vh; /* Covers most of the screen height on mobile */
-  max-height: 82vh; /* Prevents overflow on very tall screens */
-  position: relative;
-  color: white;
-  display: flex;
-  border: 2px solid white;
-}
-
-.modalContent img {
-  width: 50%;
-  /* Limit image height to prevent overflow */
-  max-height: 900px;
-  height: auto;
-  /* object-fit: contain; */
-  border-radius: 2px;
-}
-
-.closeButton {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: white;
-}
-
-.properties {
-  border: 1px solid white;
-  border-radius: 3px;
-  width: 100%;
-  /* overflow: scroll; */
-}
-
 .gridRow {
   display: flex;
   justify-content: space-between;
@@ -63,14 +26,103 @@
   padding: 0.2rem;
 }
 
-.description {
-  margin-left: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 50%;
-}
-
 p {
   margin-bottom: 0;
+}
+
+/* Media Queries */
+
+/* Mobile */
+.modalContent {
+  /* top: 65vh; */
+
+  margin-top: 30px;
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+
+  background-color: black;
+  border: 2px solid white;
+
+  /* Scrollable Modal */
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.description {
+  padding: 1rem;
+}
+
+.modalContent img {
+  /* width: 80%; */
+  /* Limit image height to prevent overflow */
+  /* max-height: 100px; */
+  height: auto;
+  /* object-fit: contain; */
+  border-radius: 2px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 12%;
+  right: 15%;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: black;
+}
+
+/* Tablets and Desktop */
+@media (min-width: 760px) {
+  .modalContent {
+    display: flex;
+    flex-direction: row;
+    margin-top: 30px;
+    border-radius: 8px;
+    width: 75%;
+    min-height: 60vh; /* Covers most of the screen height on mobile */
+    max-height: 82vh; /* Prevents overflow on very tall screens */
+    position: relative;
+    color: white;
+  }
+
+  .modalContent img {
+    width: 50%;
+    /* Limit image height to prevent overflow */
+    max-height: 900px;
+    height: auto;
+    /* object-fit: contain; */
+    border-radius: 2px;
+  }
+
+  .description {
+    padding: 1rem;
+    margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 50%;
+  }
+
+  .properties {
+    font-family: "tw";
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid white;
+    border-radius: 3px;
+    width: 100%;
+    /* overflow: scroll; */
+  }
+
+  .closeButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+  }
 }
