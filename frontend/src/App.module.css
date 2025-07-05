@@ -1,7 +1,7 @@
-@font-face {
+/* @font-face {
   font-family: tw;
   src: url(../src/assets/font/tw-cen-mt-bold.ttf);
-}
+} */
 
 * {
   box-sizing: border-box;
@@ -15,7 +15,7 @@ h3 {
 }
 
 body {
-  font-family: "tw", Arial, Helvetica, sans-serif;
+  font-family: "tw-bold", Arial, Helvetica, sans-serif;
   color: white !important;
   background-color: black;
 }

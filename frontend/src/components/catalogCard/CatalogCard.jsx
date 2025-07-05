@@ -1,13 +1,14 @@
 import Card from 'react-bootstrap/Card';
 import styles from "./CatalogCard.module.css"
 const CatalogCard = ({ cardInfo, handleModalStatus, handleSelectedCard }) => {
-	// console.log(cardInfo)
+	console.log(cardInfo)
 	const { cardMessage, image, name, price, properties } = cardInfo
 	return (
 		<Card className={styles.cardContainer} onClick={() => handleModalStatus(true, "catalogModal", cardInfo)}>
 			<Card.Img variant="top" src={image} className={styles.imageSize} />
 
 			<Card.Title className={styles.title}>
+				<p className={styles.brewery}>{properties.brewery}</p>
 				<h4>{name}</h4>
 			</Card.Title>
 

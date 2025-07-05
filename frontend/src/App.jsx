@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import './utils/fonts.css'
 import CatalogPage from "./pages/CatalogPage"
 import HomePage from "./pages/HomePage"
 import styles from "./App.module.css"

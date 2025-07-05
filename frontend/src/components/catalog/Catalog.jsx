@@ -10,7 +10,7 @@ const Catalog = ({ cards, handleModalStatus, handleSelectedCard, setSortBy, sort
 	return (
 		<div>
 			{/* Sort By dropdown */}
-			<div>
+			<div className={styles.sortBy}>
 				<label htmlFor="sortBy">Sort by:</label>
 				<select value={sortBy} onChange={e => handleSortBy(e)} name="sortBy" id="sortBy">
 					<option value="featured">Featured</option>

@@ -1,0 +1,9 @@
+@font-face {
+  font-family: tw-bold;
+  src: url(../src/assets/font/tw-cen-mt-bold.ttf);
+}
+
+@font-face {
+  font-family: tw;
+  src: url(../src/assets/font/tw-cen-mt.ttf);
+}
