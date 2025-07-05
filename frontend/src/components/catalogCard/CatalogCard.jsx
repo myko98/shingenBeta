@@ -13,9 +13,9 @@ const CatalogCard = ({ cardInfo, handleModalStatus, handleSelectedCard }) => {
 			</Card.Title>
 
 			<Card.Body className={styles.description}>
-				<div>
+				<p>
 					{cardMessage}
-				</div>
+				</p>
 			</Card.Body>
 			<Card.Footer className={styles.cardFooter}>
 				<p>${price}</p>

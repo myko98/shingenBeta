@@ -3,12 +3,13 @@
   flex-direction: column;
   justify-content: center;
   width: 250px;
-  background-color: rgb(75, 75, 75);
+  background-color: rgb(0, 0, 0);
   color: white;
   /* border: 1px solid white; */
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-align: center;
+  border: 1px solid white;
 }
 
 .cardContainer:hover {
@@ -39,6 +40,7 @@
 
 .description {
   padding: 0.2rem 0.2rem !important;
+  /* height: 0px; */
 }
 
 .cardBody {
