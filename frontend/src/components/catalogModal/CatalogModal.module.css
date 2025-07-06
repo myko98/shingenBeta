@@ -83,6 +83,7 @@ p {
     width: 75%;
     min-height: 60vh; /* Covers most of the screen height on mobile */
     max-height: 82vh; /* Prevents overflow on very tall screens */
+    max-width: 65vw;
     position: relative;
     color: white;
   }
@@ -92,7 +93,7 @@ p {
     /* Limit image height to prevent overflow */
     max-height: 900px;
     height: auto;
-    /* object-fit: contain; */
+    object-fit: contain;
     border-radius: 2px;
   }
 
