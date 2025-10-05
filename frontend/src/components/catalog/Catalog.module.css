@@ -1,16 +1,29 @@
 .catalogGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 40px;
-  margin-top: 20px;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 40px;
+	margin-top: 20px;
+	width: 100%;
+	padding: 0 40px;
+	background-color: green;
+}
 
-  /* Mobile: 1 column per row */
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
+/* Ensure exactly 3 columns on larger screens */
+@media (min-width: 1000px) {
+	.catalogGrid {
+		grid-template-columns: repeat(3, 1fr);
+		width: 100%;
+	}
+}
+
+/* Mobile: 1 column per row */
+@media (max-width: 768px) {
+	.catalogGrid {
+		grid-template-columns: 1fr;
+		width: 100%;
+	}
 }
 
 .sortBy {
-  display: flex;
-  justify-content: flex-end;
+	display: flex;
 }

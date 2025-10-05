@@ -1,28 +1,30 @@
 * {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 html {
-  font-size: 16px;
+	font-size: 16px;
 }
 
 h1,
 h2,
 h3,
 h4 {
-  margin: 0;
-  padding: 0;
+	margin: 0;
+	padding: 0;
 }
 
 body {
-  font-family: "tw-bold", Arial, Helvetica, sans-serif;
-  color: white !important;
-  background-color: black;
-  font-size: 1rem;
+	font-family: 'tw-bold', Arial, Helvetica, sans-serif;
+	color: white !important;
+	background-color: #000000 !important; /* Bootstrap dark background */
+	font-size: 1rem;
 }
 
 .appContainer {
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
+	max-width: 1200px;
+	width: 100%;
+	margin: 0 auto;
+	background-color: #000000; /* Ensure container has dark background */
+	min-height: 100vh; /* Full height */
 }

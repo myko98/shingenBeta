@@ -1,30 +1,36 @@
 import CatalogCard from '../catalogCard/CatalogCard';
+import SortAndFilter from '../SortAndFilter/SortAndFilter';
 import styles from './Catalog.module.css'; // Assuming you're using CSS Modules
 
-const Catalog = ({ cards, handleModalStatus, setSortBy, sortBy }) => {
+const Catalog = ({
+	cards,
+	handleModalStatus,
+	setSortBy,
+	sortBy,
+	filterByTaste,
+	handleFilterByTaste,
+	filterByPrice,
+	handleFilterByPrice,
+	filterByCategory,
+	handleFilterByCategory,
+}) => {
 	const handleSortBy = (e) => {
 		setSortBy(e.target.value);
 		console.log(e.target.value);
 	};
 	return (
-		<div>
-			{/* Sort By dropdown */}
-			<div className={styles.sortBy}>
-				<label htmlFor="sortBy">Sort by:</label>
-				<select
-					value={sortBy}
-					onChange={(e) => handleSortBy(e)}
-					name="sortBy"
-					id="sortBy"
-				>
-					<option value="featured">Featured</option>
-					<option value="price_low_high">Price (Low-High)</option>
-					<option value="price_high_low">Price (High-Low)</option>
-					<option value="new_arrivals">New Arrivals</option>
-					<option value="a_z">Product Name (A-Z)</option>
-					<option value="z_a">Product Name (Z-A)</option>
-				</select>
-			</div>
+		<>
+			<SortAndFilter
+				styles={styles.sortBy}
+				sortBy={sortBy}
+				handleSortBy={handleSortBy}
+				filterByTaste={filterByTaste}
+				handleFilterByTaste={handleFilterByTaste}
+				filterByPrice={filterByPrice}
+				handleFilterByPrice={handleFilterByPrice}
+				filterByCategory={filterByCategory}
+				handleFilterByCategory={handleFilterByCategory}
+			/>
 			<div className={styles.catalogGrid}>
 				{cards.length > 0 ? (
 					cards.map((card) => (
@@ -38,7 +44,7 @@ const Catalog = ({ cards, handleModalStatus, setSortBy, sortBy }) => {
 					<div>No cards</div>
 				)}
 			</div>
-		</div>
+		</>
 	);
 };
 

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import Navbar from '../components/navbar/Navbar';
 import Sidebar from '../components/sidebar/Sidenav';
 import Catalog from '../components/catalog/Catalog';
 import styles from './CatalogPage.module.css';
@@ -7,12 +6,6 @@ import CatalogModal from '../components/catalogModal/CatalogModal';
 
 // Page that houses the Catalog and Sidebar components
 const CatalogPage = () => {
-	// state for filterings
-	// pass setter to sidebar
-	// fetch cards on the page. if filters are applied from sidebar, filter the
-	// cards and send the result into catalog
-	const [filters, setFilters] = useState([]);
-	// Original cards
 	const [cards, setCards] = useState([]);
 	const [filteredCards, setFilteredCards] = useState([]);
 	const [selectedCard, setSelectedCard] = useState(null);
@@ -20,9 +13,10 @@ const CatalogPage = () => {
 	// Sorted dropdown value
 	const [sortBy, setSortBy] = useState('featured');
 
-	// const handleSelectedCard = (selectedCard) => {
-	// 	setSelectedCard(selectedCard)
-	// }
+	// Filter states
+	const [filterByTaste, setFilterByTaste] = useState('all');
+	const [filterByPrice, setFilterByPrice] = useState('all');
+	const [filterByCategory, setFilterByCategory] = useState('all');
 
 	const handleModalStatus = (status, modalType = '', card = null) => {
 		if (status === true) {
@@ -34,7 +28,21 @@ const CatalogPage = () => {
 		}
 	};
 
-	// Fetches data from Contentful API
+	// Filter handlers
+	const handleFilterByTaste = (e) => {
+		console.log('Taste: ', e.target.value);
+		setFilterByTaste(e.target.value);
+	};
+	const handleFilterByPrice = (e) => {
+		console.log('Price: ', e.target.value);
+		setFilterByPrice(e.target.value);
+	};
+	const handleFilterByCategory = (e) => {
+		console.log('Category: ', e.target.value);
+		setFilterByCategory(e.target.value);
+	};
+
+	// Fetches all cards from Contentful API, set the cards to our schema and cards react state
 	const fetchData = async () => {
 		try {
 			const response = await fetch(
@@ -49,20 +57,16 @@ const CatalogPage = () => {
 			}
 			const data = await response.json();
 
+			// console.log('DATA: ', data);
+
 			// Iterate data and set items state
 			const items = data.items.map((item) => {
 				const imageId = item.fields.sakeImage.sys.id; // Get the image ID
 				const asset = data.includes.Asset.find((a) => a.sys.id === imageId); // Find the matching asset
 				const imageUrl = asset ? `https:${asset.fields.file.url}` : ''; // Get the image URL if asset is found
 
-				const {
-					cardMessage,
-					description,
-					name,
-					price,
-					sakeImage,
-					...properties
-				} = item.fields;
+				const { cardMessage, description, name, price, ...properties } =
+					item.fields;
 
 				return {
 					id: item.sys.id,
@@ -81,30 +85,14 @@ const CatalogPage = () => {
 			console.error('Error fetching data:', error);
 		}
 	};
+
+	// Fetch all cards on initial rendar
 	useEffect(() => {
 		fetchData();
 	}, []);
 
-	// Filter cards (Based on Side Nav Bar)
-	useEffect(() => {
-		// if no filters selected, then select all cards
-		if (filters.length === 0) {
-			setFilteredCards(cards);
-		}
-		// else filter cards based on selected properties
-		else {
-			const newCards = cards.filter((card) => {
-				return filters.every((filter) => {
-					return Object.values(card.properties).includes(filter);
-				});
-			});
-			setFilteredCards(newCards);
-		}
-	}, [filters, cards]);
-
 	// Updates list of cards when SORT BY filter value is changed
 	useEffect(() => {
-		console.log(cards);
 		// New filtered cards
 		let filteredCards;
 		if (sortBy === 'price_low_high') {
@@ -135,33 +123,36 @@ const CatalogPage = () => {
 				return b.name.localeCompare(a.name);
 			});
 			setFilteredCards(filteredCards);
-		} else if (sortBy === 'featured') {
+		}
+		// Default case
+		else if (sortBy === 'featured') {
 			setFilteredCards(cards);
 		}
 	}, [sortBy, cards]);
 
 	return (
 		<>
-			<div className={styles.container}>
-				<div className={styles.body}>
-					<Sidebar setFilters={setFilters} />
-					<div>
-						<div className={styles.header}>
-							<h1>Premium Sake Collection</h1>
-							<p>
-								Discover our curated selection of authentic Japanese sake from
-								renowned breweries across Japan
-							</p>
-						</div>
-						<Catalog
-							cards={filteredCards}
-							handleModalStatus={handleModalStatus}
-							// handleSelectedCard={handleSelectedCard}
-							setSortBy={setSortBy}
-							sortBy={sortBy}
-						/>
-					</div>
+			<div className={styles.body}>
+				<div className={styles.header}>
+					<h1>Premium Sake Collection</h1>
+					<p>
+						Discover our curated selection of authentic Japanese sake from
+						renowned breweries across Japan
+					</p>
 				</div>
+				<Catalog
+					cards={filteredCards}
+					handleModalStatus={handleModalStatus}
+					// handleSelectedCard={handleSelectedCard}
+					setSortBy={setSortBy}
+					sortBy={sortBy}
+					filterByTaste={filterByTaste}
+					handleFilterByTaste={handleFilterByTaste}
+					filterByPrice={filterByPrice}
+					handleFilterByPrice={handleFilterByPrice}
+					filterByCategory={filterByCategory}
+					handleFilterByCategory={handleFilterByCategory}
+				/>
 			</div>
 			{openModal === 'catalogModal' && (
 				<CatalogModal
