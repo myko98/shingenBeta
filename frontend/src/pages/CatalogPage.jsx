@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import Sidebar from '../components/sidebar/Sidenav';
 import Catalog from '../components/catalog/Catalog';
 import styles from './CatalogPage.module.css';
 import CatalogModal from '../components/catalogModal/CatalogModal';

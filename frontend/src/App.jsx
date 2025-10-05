@@ -1,4 +1,5 @@
 import './utils/fonts.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import CatalogPage from './pages/CatalogPage';
 import HomePage from './pages/HomePage';
 import styles from './App.module.css';
